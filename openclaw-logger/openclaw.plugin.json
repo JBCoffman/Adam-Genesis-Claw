@@ -1,0 +1,15 @@
+{
+  "id": "openclaw-logger",
+  "name": "Conversation Logger",
+  "description": "Logs all LLM conversations (input, output, thinking, tokens, latency) to JSONL files on disk.",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "logDir": {
+        "type": "string",
+        "description": "Directory path to write JSONL log files. Must be inside ~/.openclaw/ to persist via Docker volume mount."
+      }
+    }
+  }
+}

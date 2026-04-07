@@ -1,0 +1,23 @@
+{
+  "name": "openclaw-logger",
+  "version": "1.0.0",
+  "description": "Logs all OpenClaw LLM conversations to JSONL files",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "devDependencies": {
+    "openclaw": "*",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "openclaw": "*"
+  },
+  "openclaw": {
+    "extensions": [
+      "./dist/index.js"
+    ]
+  }
+}
