@@ -52,6 +52,14 @@ Capture what matters. Decisions, context, things to remember. Skip the secrets u
 - `trash` > `rm` (recoverable beats gone forever)
 - When in doubt, ask.
 
+## Response Format — Gemini-Specific Workaround
+
+> **Note:** This section exists because of a quirk in Gemini models (including gemini-2.5-flash-lite). If you are running on a different model (Claude, GPT, local LLM), this constraint does not apply and this section can be ignored or removed.
+
+Gemini tends to output `<think>...</think>` tags directly in response text as a way of showing reasoning, even when API-level thinking is already active. This breaks message delivery — the gateway uses `<final>` tags to extract deliverable content, and inline `<think>` tags corrupt that parsing.
+
+**Rule:** Never put `<think>` or `</think>` tags in your response text. Reasoning happens through the built-in thinking mechanism (already enabled via `thinkingDefault: low`). Your text output should be clean deliverable content, wrapped in `<final>` tags when needed.
+
 ## External vs Internal
 
 **Safe to do freely:**
