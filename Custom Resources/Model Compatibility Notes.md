@@ -26,6 +26,26 @@ Known model-specific quirks and the workarounds applied to AdamClaw. When switch
 
 ---
 
+### Code execution mode (`<tool_code>` / `default_api.*()`)
+
+**Problem:** Gemini has two separate mechanisms for interacting with tools: function calling (correct) and code execution (wrong for OpenClaw). When asked to perform multiple file operations at once, Gemini sometimes generates `<tool_code>` blocks containing Python-style calls like `default_api.write(...)` instead of using the proper function calling API. OpenClaw has no Python interpreter — these blocks are silently ignored and nothing executes. The agent will claim to have completed actions it never actually performed.
+
+**Symptoms:**
+
+- Agent says it updated/deleted files but the files are unchanged
+- Session file has zero `toolCall` content entries despite the agent describing tool use
+- Session file shows only `text` and `thinking` content types
+
+**Workaround applied:** Added explicit instruction to `AGENTS.md`:
+
+> Never use `<tool_code>` blocks or `default_api.*()` calls. Use the tool system directly as described in the Tooling section.
+
+**Where it lives:** `agent-configs/*/workspace/AGENTS.md` → "Response Format — Gemini-Specific Workaround" section.
+
+**If switching models:** Claude, GPT-4o, and local LLMs do not have a code execution mode — this rule is safe to remove.
+
+---
+
 ## Future: Local LLM on Network Device
 
 Jake's roadmap includes routing AdamClaw's thinking to a self-hosted local LLM (e.g., via Ollama on a network device). When that happens:

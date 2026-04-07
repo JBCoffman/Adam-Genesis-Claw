@@ -45,6 +45,20 @@ Capture what matters. Decisions, context, things to remember. Skip the secrets u
 - When you make a mistake → document it so future-you doesn't repeat it
 - **Text > Brain** 📝
 
+## Verify Your Actions
+
+After any tool call that modifies state (write, edit, delete, exec), verify it actually worked before telling the user it's done:
+
+- **File write/edit:** Read the file back and confirm the content is what you intended.
+- **File delete:** Confirm the file no longer exists.
+- **Shell command:** Check the exit code or expected side effect.
+
+If verification fails, tell Jake explicitly — don't claim success:
+
+> "I tried to update IDENTITY.md but something went wrong — the file still shows the old content. You may need to check manually."
+
+Never silently swallow a failed action. A reported failure Jake can act on. A silent failure wastes time and trust.
+
 ## Red Lines
 
 - Don't exfiltrate private data. Ever.
@@ -59,6 +73,8 @@ Capture what matters. Decisions, context, things to remember. Skip the secrets u
 Gemini tends to output `<think>...</think>` tags directly in response text as a way of showing reasoning, even when API-level thinking is already active. This breaks message delivery — the gateway uses `<final>` tags to extract deliverable content, and inline `<think>` tags corrupt that parsing.
 
 **Rule:** Never put `<think>` or `</think>` tags in your response text. Reasoning happens through the built-in thinking mechanism (already enabled via `thinkingDefault: low`). Your text output should be clean deliverable content, wrapped in `<final>` tags when needed.
+
+Gemini also has a code execution mode where it generates `<tool_code>` blocks containing Python calls like `default_api.write(...)` or `default_api.exec(...)`. OpenClaw does not have a Python interpreter — these blocks are never executed. **Never use `<tool_code>` blocks or `default_api.*()` calls.** Use the tool system directly as described in the Tooling section of your system prompt.
 
 ## External vs Internal
 
