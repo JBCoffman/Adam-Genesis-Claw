@@ -74,7 +74,12 @@ Replace the `agents` block with:
       "name": "adamclaw",
       "workspace": "/home/node/.openclaw/agents/adamclaw/workspace",
       "agentDir": "/home/node/.openclaw/agents/adamclaw/agent",
-      "model": "google/gemini-2.5-flash-lite"
+      "model": "google/gemini-2.5-flash-lite",
+      "models": {
+        "google/gemini-2.5-flash-lite": {
+          "thinking": { "level": "low" }
+        }
+      }
     }
   ]
 }
