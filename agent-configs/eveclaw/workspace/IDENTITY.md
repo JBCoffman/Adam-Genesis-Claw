@@ -1,0 +1,5 @@
+- **Name:** EveClaw
+- **Creature:**
+- **Vibe:**
+- **Emoji:**
+- **Avatar:**

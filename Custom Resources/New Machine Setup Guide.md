@@ -7,9 +7,9 @@ How to get the full OpenClaw + AdamClaw stack running on a new Mac from scratch.
 ## What You're Restoring
 
 - **OpenClaw Gateway** — runs in Docker, handles all agent orchestration
-- **AdamClaw agent** — your personal agent, routed via Telegram
+- **AdamClaw agent** — personal agent, routed via @AdamGenesisClaw_bot on Telegram
+- **EveClaw agent** — second agent, routed via @EveGenesisClaw_bot on Telegram
 - **openclaw-logger plugin** — logs all conversations to JSONL files
-- **Telegram connection** — existing bot (@AdamGenesisClaw_bot) pointed at AdamClaw
 
 ---
 
@@ -76,6 +76,14 @@ Replace the `agents` block with:
       "agentDir": "/home/node/.openclaw/agents/adamclaw/agent",
       "model": "google/gemini-2.5-flash-lite",
       "thinkingDefault": "low"
+    },
+    {
+      "id": "eveclaw",
+      "name": "eveclaw",
+      "workspace": "/home/node/.openclaw/agents/eveclaw/workspace",
+      "agentDir": "/home/node/.openclaw/agents/eveclaw/agent",
+      "model": "google/gemini-2.5-flash-lite",
+      "thinkingDefault": "low"
     }
   ]
 }
@@ -92,29 +100,44 @@ Add this at the top level of `openclaw.json`:
     "agentId": "adamclaw",
     "match": {
       "channel": "telegram",
-      "accountId": "default"
+      "accountId": "adamclaw"
+    }
+  },
+  {
+    "type": "route",
+    "agentId": "eveclaw",
+    "match": {
+      "channel": "telegram",
+      "accountId": "eveclaw"
     }
   }
 ]
 ```
 
-This routes your Telegram bot traffic to AdamClaw specifically, leaving `main` as the default for all other channels.
-
 ### Telegram channel
 
-Add/update the `channels.telegram` entry with your bot token:
+Add/update the `channels.telegram` entry with both bot tokens:
 
 ```json
 "channels": {
   "telegram": {
-    "dmPolicy": "pairing",
-    "enabled": true,
-    "botToken": "YOUR_TELEGRAM_BOT_TOKEN"
+    "accounts": {
+      "adamclaw": {
+        "botToken": "YOUR_ADAMCLAW_BOT_TOKEN",
+        "dmPolicy": "pairing"
+      },
+      "eveclaw": {
+        "botToken": "YOUR_EVECLAW_BOT_TOKEN",
+        "dmPolicy": "pairing"
+      }
+    },
+    "defaultAccount": "adamclaw",
+    "enabled": true
   }
 }
 ```
 
-Your Telegram bot token comes from BotFather. The existing bot (@AdamGenesisClaw_bot) — just grab the token from your secure notes.
+Bot tokens come from BotFather — grab them from your secure notes. After restore, each bot requires a one-time pairing approval (see Step 6).
 
 ### openclaw-logger plugin
 
@@ -149,30 +172,24 @@ Merge this with the `openclaw-logger` entry above — `plugins.entries` is a sin
 
 ---
 
-## Step 3 — Restore AdamClaw's workspace
+## Step 3 — Restore agent workspaces
 
-Create the workspace directory and copy the backed-up files from this repo:
+Create workspace directories and copy the backed-up files from this repo:
 
 ```bash
+# AdamClaw
 mkdir -p ~/.openclaw/agents/adamclaw/workspace
 cp agent-configs/adamclaw/workspace/*.md ~/.openclaw/agents/adamclaw/workspace/
-```
 
-This restores:
+# EveClaw
+mkdir -p ~/.openclaw/agents/eveclaw/workspace
+cp agent-configs/eveclaw/workspace/*.md ~/.openclaw/agents/eveclaw/workspace/
 
-- `SOUL.md` — who AdamClaw is
-- `IDENTITY.md` — name, emoji, creature, vibe
-- `AGENTS.md` — behavioral rules and working style
-- `USER.md` — info about you (Jake)
-- `TOOLS.md` — local setup notes
-- `BOOTSTRAP.md` — first-run ritual (AdamClaw will delete this after first conversation)
-- `HEARTBEAT.md` — scheduled task config
-
-Also create the shared `main` workspace (OpenClaw expects it):
-
-```bash
+# Shared main workspace (OpenClaw expects it)
 mkdir -p ~/.openclaw/workspace
 ```
+
+Each workspace restores: `SOUL.md`, `IDENTITY.md`, `AGENTS.md`, `USER.md`, `TOOLS.md`, `HEARTBEAT.md`. EveClaw also includes `BOOTSTRAP.md` for the first-run identity ritual.
 
 ---
 
@@ -200,15 +217,22 @@ docker logs openclaw-openclaw-gateway-1 --tail 20
 
 You should see:
 
-- `[telegram] [default] starting provider (@AdamGenesisClaw_bot)`
+- `[telegram] [adamclaw] starting provider (@AdamGenesisClaw_bot)`
+- `[telegram] [eveclaw] starting provider (@EveGenesisClaw_bot)`
 - `[plugins] openclaw-logger: loaded without install/load-path provenance`
 - `[gateway] listening on ws://...`
 
 ---
 
-## Step 6 — Validate
+## Step 6 — Pair bots and validate
 
-Run the logger test to confirm the full stack is working end to end:
+Each bot requires a one-time pairing approval after restore. Message each bot in Telegram — it will respond with a pairing code. Approve with:
+
+```bash
+docker exec openclaw-openclaw-gateway-1 openclaw pairing approve telegram <CODE>
+```
+
+Then run the logger test to confirm the full stack is working end to end:
 
 ```bash
 ./test-logger.sh
@@ -242,12 +266,14 @@ Or use the OpenClaw web UI (browser at `http://localhost:18789`) to set up the G
 
 These you need to source elsewhere:
 
-| Thing                   | Where to get it                                                                              |
-| ----------------------- | -------------------------------------------------------------------------------------------- |
-| Telegram bot token      | BotFather — the @AdamGenesisClaw_bot token                                                   |
-| Google API key          | Google AI Studio (aistudio.google.com)                                                       |
-| Gateway auth token      | Regenerated automatically by OpenClaw on first run                                           |
-| AdamClaw's memory files | `~/.openclaw/agents/adamclaw/workspace/memory/` — these live on your Mac only, not backed up |
+| Thing                   | Where to get it                                                                         |
+| ----------------------- | --------------------------------------------------------------------------------------- |
+| AdamClaw bot token      | BotFather — the @AdamGenesisClaw_bot token                                              |
+| EveClaw bot token       | BotFather — the @EveGenesisClaw_bot token                                               |
+| Google API key          | Google AI Studio (aistudio.google.com)                                                  |
+| Gateway auth token      | Regenerated automatically by OpenClaw on first run                                      |
+| AdamClaw's memory files | `~/.openclaw/agents/adamclaw/workspace/memory/` — lives on your Mac only, not backed up |
+| EveClaw's memory files  | `~/.openclaw/agents/eveclaw/workspace/memory/` — lives on your Mac only, not backed up  |
 
 ---
 
@@ -256,20 +282,20 @@ These you need to source elsewhere:
 ```
 Adam-Genesis-Claw/
 ├── agent-configs/
-│   └── adamclaw/
-│       └── workspace/       ← restore these to ~/.openclaw/agents/adamclaw/workspace/
-│           ├── SOUL.md
-│           ├── IDENTITY.md
-│           ├── AGENTS.md
-│           ├── USER.md
-│           ├── TOOLS.md
-│           ├── BOOTSTRAP.md
-│           └── HEARTBEAT.md
+│   ├── adamclaw/
+│   │   └── workspace/       ← restore to ~/.openclaw/agents/adamclaw/workspace/
+│   │       ├── SOUL.md, IDENTITY.md, AGENTS.md, USER.md, TOOLS.md, HEARTBEAT.md
+│   └── eveclaw/
+│       └── workspace/       ← restore to ~/.openclaw/agents/eveclaw/workspace/
+│           ├── SOUL.md, IDENTITY.md, AGENTS.md, USER.md, TOOLS.md, HEARTBEAT.md, BOOTSTRAP.md
 ├── openclaw-logger/         ← plugin source
 ├── install.sh               ← installs the logger plugin
 ├── test-logger.sh           ← validates the full stack
 ├── view-logs.sh             ← human-readable log viewer
 └── Custom Resources/
+    ├── Adding a New Agent.md
+    ├── Model Compatibility Notes.md
+    ├── New Machine Setup Guide.md
     ├── Plugin Development Guide.md
     ├── openclaw-logger User Guide.md
     └── Agent Personalization Fields.md
@@ -279,16 +305,19 @@ Adam-Genesis-Claw/
 
 ## Keeping the Backup Current
 
-Whenever you significantly change AdamClaw's workspace files (updating SOUL.md, AGENTS.md, etc.), sync them back to the repo:
+Whenever you significantly change an agent's workspace files (updating SOUL.md, AGENTS.md, etc.), sync them back to the repo:
 
 ```bash
 cp ~/.openclaw/agents/adamclaw/workspace/*.md \
    /path/to/Adam-Genesis-Claw/agent-configs/adamclaw/workspace/
 
+cp ~/.openclaw/agents/eveclaw/workspace/*.md \
+   /path/to/Adam-Genesis-Claw/agent-configs/eveclaw/workspace/
+
 cd /path/to/Adam-Genesis-Claw
 git add agent-configs/
-FAST_COMMIT=1 git commit -m "chore: sync adamclaw workspace files"
+FAST_COMMIT=1 git commit -m "chore: sync agent workspace files"
 git push
 ```
 
-The `memory/` subdirectory inside the workspace is intentionally not backed up — it contains session-specific notes that are only meaningful in context. The personality files (SOUL, AGENTS, IDENTITY) are the important ones.
+The `memory/` subdirectory inside each workspace is intentionally not backed up — it contains session-specific notes only meaningful in context. The personality files (SOUL, AGENTS, IDENTITY) are the important ones.
