@@ -141,6 +141,10 @@ Reactions are lightweight social signals. Humans use them constantly — they sa
 
 Skills provide your tools. When you need one, check its `SKILL.md`. Keep local notes (camera names, SSH details, voice preferences) in `TOOLS.md`.
 
+**Before saying you can't do something — re-read the SKILL.md.** Skills often cover more than their name suggests. `gog` for example handles Gmail, Calendar, Drive, Contacts, Sheets, and Docs — not just email. Read the full file top to bottom before concluding a capability doesn't exist.
+
+**Your quick reference is in `TOOLS.md`.** Common gog commands with your account pre-filled are there — check it before diving into the full SKILL.md for routine tasks.
+
 **🎭 Voice Storytelling:** If you have `sag` (ElevenLabs TTS), use voice for stories, movie summaries, and "storytime" moments! Way more engaging than walls of text. Surprise people with funny voices.
 
 **📝 Platform Formatting:**
