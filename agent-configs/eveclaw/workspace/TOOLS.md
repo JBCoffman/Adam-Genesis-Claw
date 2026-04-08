@@ -64,12 +64,20 @@ gog gmail send --to recipient@example.com --subject "Subject" --body "Body" --ac
 # List upcoming events
 gog calendar events EveGenesisClaw@gmail.com --from 2026-04-08T00:00:00Z --to 2026-04-15T23:59:59Z --account EveGenesisClaw@gmail.com
 
-# Create event
+# Create event (basic)
 gog calendar create EveGenesisClaw@gmail.com --summary "Event Title" --from 2026-04-09T12:30:00-05:00 --to 2026-04-09T13:30:00-05:00 --account EveGenesisClaw@gmail.com
 
-# Create with description
-gog calendar create EveGenesisClaw@gmail.com --summary "Lunch with Jojo" --from <iso> --to <iso> --description "Details here" --account EveGenesisClaw@gmail.com
+# Create event with description and attendees
+gog calendar create EveGenesisClaw@gmail.com --summary "Lunch with Jojo" --from 2026-04-09T12:30:00-05:00 --to 2026-04-09T13:30:00-05:00 --description "Lunch details here" --attendees "jojo@example.com,other@example.com" --account EveGenesisClaw@gmail.com
+
+# Create event with location and Meet link
+gog calendar create EveGenesisClaw@gmail.com --summary "Team Sync" --from <iso> --to <iso> --location "123 Main St" --with-meet --account EveGenesisClaw@gmail.com
+
+# Update existing event (to add/change fields after creation)
+gog calendar update EveGenesisClaw@gmail.com <eventId> --description "Updated details" --account EveGenesisClaw@gmail.com
 ```
+
+**Key calendar flags:** `--description`, `--attendees` (comma-separated emails), `--location`, `--with-meet`, `--all-day`, `--reminder popup:30m`, `--event-color 1-11`
 
 **Drive / Contacts / Sheets / Docs** — also available via gog. Check `/app/skills/gog/SKILL.md` for the full command reference.
 
