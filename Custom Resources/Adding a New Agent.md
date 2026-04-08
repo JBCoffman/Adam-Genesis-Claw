@@ -182,7 +182,7 @@ Channel config changes (`channels.telegram`) require a full Docker restart — t
 After restart, verify both bots appear in the logs:
 
 ```bash
-docker logs openclaw-openclaw-gateway-1 --tail 20 | grep "starting provider"
+docker logs adamclaw-openclaw-gateway-1 --tail 20 | grep "starting provider"
 ```
 
 Expected output:
@@ -199,7 +199,7 @@ Expected output:
 Send any message to the new bot in Telegram. It will respond with a pairing code. Approve it:
 
 ```bash
-docker exec openclaw-openclaw-gateway-1 openclaw pairing approve telegram <CODE>
+docker exec adamclaw-openclaw-gateway-1 openclaw pairing approve telegram <CODE>
 ```
 
 > There may also be an approval UI in the gateway browser (`http://localhost:18789`) — check for a notification or pending approval indicator.

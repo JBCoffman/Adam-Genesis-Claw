@@ -205,14 +205,23 @@ This builds the TypeScript plugin, copies it to `~/.openclaw/extensions/openclaw
 
 ---
 
-## Step 5 — Start the Gateway
+## Step 5 — Build and Start the Gateway
 
-Start the OpenClaw Gateway container in Docker Desktop. On first run it will pull the image — give it a minute.
+The compose file uses a locally built image (`openclaw:local`). `docker compose build` does nothing — you must build explicitly:
+
+```bash
+cd /Users/home/tools/Adamclaw
+docker compose down
+docker build -t openclaw:local .
+docker compose up -d
+```
+
+The build takes several minutes on first run. The compose project is named `adamclaw` (derived from the directory name), so containers are named `adamclaw-openclaw-gateway-1` and `adamclaw-openclaw-cli-1`.
 
 Verify it's running:
 
 ```bash
-docker logs openclaw-openclaw-gateway-1 --tail 20
+docker logs adamclaw-openclaw-gateway-1 --tail 20
 ```
 
 You should see:
@@ -226,19 +235,23 @@ You should see:
 
 ## Step 6 — Pair bots and validate
 
-Each bot requires a one-time pairing approval after restore. Message each bot in Telegram — it will respond with a pairing code. Approve with:
+Each bot requires a one-time pairing approval after restore. Note: pairing is tied to the Telegram account ID, not the container name — if the container name changed (e.g. from `openclaw-` to `adamclaw-` prefix), existing pairings are invalidated and must be re-approved. Message each bot in Telegram — it will respond with a pairing code. Approve with:
 
 ```bash
-docker exec openclaw-openclaw-gateway-1 openclaw pairing approve telegram <CODE>
+docker exec adamclaw-openclaw-gateway-1 openclaw pairing approve telegram <CODE>
 ```
 
 Then run the logger test to confirm the full stack is working end to end:
+
+> **Note on XDG persistence:** `docker-compose.yml` sets `XDG_CONFIG_HOME=/home/node/.openclaw/.config` and `XDG_DATA_HOME=/home/node/.openclaw/.local/share`. This redirects all XDG-compliant skill CLIs (gog, etc.) to store their config inside the volume-mounted directory, so credentials survive rebuilds. This is already in the compose file — no action needed unless you're modifying the compose file from scratch.
 
 ```bash
 ./test-logger.sh
 ```
 
 All 10 checks should pass.
+
+**Skill CLIs (gog etc.):** After restore, any skill CLIs that require auth must be re-authorized inside the new container. The encrypted keyring files persist in `~/.openclaw/.config/` (via XDG and the volume mount), but you must re-run the token import step. See `Custom Resources/Adding a New Skill (Docker Setup).md` → Step 4 for the exact flow.
 
 Then send a Telegram message to @AdamGenesisClaw_bot. Check the log to confirm it routed to `adamclaw`:
 
@@ -255,7 +268,7 @@ You should see `agent_id: adamclaw` and `channel: telegram`.
 If OpenClaw doesn't already have your Google API key, configure it:
 
 ```bash
-docker exec openclaw-openclaw-gateway-1 sh -c "openclaw config set ..."
+docker exec adamclaw-openclaw-gateway-1 sh -c "openclaw config set ..."
 ```
 
 Or use the OpenClaw web UI (browser at `http://localhost:18789`) to set up the Google provider auth. Your API key lives in your secure notes.

@@ -1,0 +1,7 @@
+# Override root .gitignore for agent config backups.
+# These files are intentionally tracked here as restore points.
+!IDENTITY.md
+!USER.md
+
+# Never commit OAuth client secrets
+client_secret*.json

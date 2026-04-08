@@ -391,7 +391,7 @@ cp -r dist/ ~/.openclaw/extensions/your-plugin-id/dist/
 ## Diagnosing Load Failures
 
 ```bash
-docker logs openclaw-openclaw-gateway-1 2>&1 | grep -i "your-plugin-id"
+docker logs adamclaw-openclaw-gateway-1 2>&1 | grep -i "your-plugin-id"
 ```
 
 | Log message                                                     | Cause                                                                           | Fix                                         |

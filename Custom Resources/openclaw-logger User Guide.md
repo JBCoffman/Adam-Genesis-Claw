@@ -51,7 +51,11 @@ From the `Adamclaw/` project directory:
 ./install.sh
 ```
 
-Then restart the OpenClaw Gateway container in Docker Desktop (stop → start `openclaw-openclaw-gateway-1`).
+Then restart the gateway:
+
+```bash
+cd /Users/home/tools/Adamclaw && docker compose restart openclaw-gateway
+```
 
 ### What the installer does
 
@@ -238,7 +242,7 @@ This was a known ordering bug (fixed April 2026). Make sure you have the latest 
 
 **No log file appears after conversations**
 
-1. Check the Gateway restarted after install: `docker logs openclaw-openclaw-gateway-1 | grep openclaw-logger`
+1. Check the Gateway restarted after install: `docker logs adamclaw-openclaw-gateway-1 | grep openclaw-logger`
 2. Confirm the log directory exists on the host: `ls ~/.openclaw/logs/conversations/`
 3. Run `./test-logger.sh` for a step-by-step diagnosis
 

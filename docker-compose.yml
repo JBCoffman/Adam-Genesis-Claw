@@ -10,6 +10,12 @@ services:
       CLAUDE_WEB_SESSION_KEY: ${CLAUDE_WEB_SESSION_KEY:-}
       CLAUDE_WEB_COOKIE: ${CLAUDE_WEB_COOKIE:-}
       TZ: ${OPENCLAW_TZ:-UTC}
+      GOG_KEYRING_PASSWORD: ${GOG_KEYRING_PASSWORD:-}
+      # XDG base dirs — redirect skill CLI config into the volume-mounted .openclaw
+      # directory so credentials survive container rebuilds. Any XDG-compliant skill
+      # binary (gog, and future CLIs) will automatically store config here.
+      XDG_CONFIG_HOME: /home/node/.openclaw/.config
+      XDG_DATA_HOME: /home/node/.openclaw/.local/share
     volumes:
       - ${OPENCLAW_CONFIG_DIR}:/home/node/.openclaw
       - ${OPENCLAW_WORKSPACE_DIR}:/home/node/.openclaw/workspace
