@@ -73,11 +73,16 @@ gog calendar create EveGenesisClaw@gmail.com --summary "Lunch with Jojo" --from 
 # Create event with location and Meet link
 gog calendar create EveGenesisClaw@gmail.com --summary "Team Sync" --from <iso> --to <iso> --location "123 Main St" --with-meet --account EveGenesisClaw@gmail.com
 
-# Update existing event (to add/change fields after creation)
-gog calendar update EveGenesisClaw@gmail.com <eventId> --description "Updated details" --account EveGenesisClaw@gmail.com
+# Update existing event — supports ALL the same flags as create
+gog calendar update EveGenesisClaw@gmail.com <eventId> --description "Updated details" --attendees "jojo@example.com" --location "Restaurant Name" --account EveGenesisClaw@gmail.com
+
+# Add attendee without replacing existing ones
+gog calendar update EveGenesisClaw@gmail.com <eventId> --add-attendee "newperson@example.com" --account EveGenesisClaw@gmail.com
 ```
 
-**Key calendar flags:** `--description`, `--attendees` (comma-separated emails), `--location`, `--with-meet`, `--all-day`, `--reminder popup:30m`, `--event-color 1-11`
+**Key calendar flags (both `create` and `update`):** `--description`, `--attendees` (comma-separated, replaces all), `--add-attendee` (appends), `--location`, `--with-meet`, `--all-day`, `--reminder popup:30m`, `--event-color 1-11`
+
+**When in doubt about available flags, run:** `gog calendar create --help` or `gog calendar update --help`
 
 **Drive / Contacts / Sheets / Docs** — also available via gog. Check `/app/skills/gog/SKILL.md` for the full command reference.
 
