@@ -187,25 +187,42 @@ Add the key to `.env` and wire it into `docker-compose.yml` environment, followi
 
 ## Step 5 — Per-Agent Access Control
 
-By default all agents can use all enabled skills. To restrict a skill to specific agents:
+**Important:** `agents.list[].skills` is an **allowlist**, not a denylist. An agent only gets a skill's SKILL.md injected into its system prompt if the skill is explicitly listed in that agent's `skills` array. Without it, the agent can still run the binary via `exec`, but has no skill documentation in context — it will hallucinate or fail to use the tool correctly.
 
-**Via web UI (recommended):**
+**To grant a skill to an agent** (required for the skill to work properly):
 
-1. Go to `127.0.0.1:18789/agents`
-2. Select the agent to block
-3. Skills tab → toggle the skill off
-4. This creates a per-agent denylist for that agent only
-
-**Via `openclaw.json`** (for config-as-code):
-
-```json
-{
-  "id": "adamclaw",
-  "skills": {
-    "deny": ["gog", "<other-skill>"]
-  }
-}
+```python
+python3 -c "
+import json
+path = '/Users/home/.openclaw/openclaw.json'
+with open(path) as f:
+    c = json.load(f)
+for agent in c['agents']['list']:
+    if agent['id'] == '<agent-id>':
+        agent['skills'] = agent.get('skills', []) + ['<skill-id>']
+with open(path, 'w') as f:
+    json.dump(c, f, indent=2)
+print('done')
+"
 ```
+
+Config hot-reloads — no restart needed for the config change itself.
+
+**Critical:** Skills are injected at **session creation time** and cached in the session snapshot. Adding a skill to the allowlist via hot-reload updates the in-memory config but does NOT refresh existing sessions. The agent will continue running without the skill until its session is reset.
+
+**After updating the allowlist, reset the agent's session:**
+
+```bash
+# Delete ONLY sessions.json — this resets the routing/snapshot metadata.
+# The JSONL conversation transcript is a separate file and is NOT deleted.
+rm ~/.openclaw/agents/<agent-id>/sessions/sessions.json
+```
+
+On the agent's next message, OpenClaw creates a new session and resolves skills from the current config. Verify by checking that `skillsSnapshot.skills` in the new `sessions.json` contains the skill name.
+
+**To block a skill from an agent:** simply don't include it in that agent's `skills` array.
+
+**Via web UI:** The Skills tab per-agent toggles skills on/off — but verify via `openclaw.json` that the `skills` array reflects what you expect. The UI sets the allowlist and the same session-reset requirement applies.
 
 ---
 
@@ -230,9 +247,9 @@ docker exec adamclaw-openclaw-gateway-1 <tool> auth status
 
 ## Installed Skills (keep current)
 
-| Skill | Binary         | Auth                               | Agents with access | Notes                      |
-| ----- | -------------- | ---------------------------------- | ------------------ | -------------------------- |
-| `gog` | `gog` (gogcli) | OAuth — `EveGenesisClaw@gmail.com` | EveClaw only       | AdamClaw denied via web UI |
+| Skill | Binary         | Auth                               | Agents with access | Notes                                                |
+| ----- | -------------- | ---------------------------------- | ------------------ | ---------------------------------------------------- |
+| `gog` | `gog` (gogcli) | OAuth — `EveGenesisClaw@gmail.com` | EveClaw only       | `eveclaw.skills: ["gog"]`; AdamClaw has `skills: []` |
 
 ---
 
