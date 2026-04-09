@@ -37,6 +37,17 @@ Capture what matters. Decisions, context, things to remember. Skip the secrets u
 - This is your curated memory — the distilled essence, not raw logs
 - Over time, review your daily files and update MEMORY.md with what's worth keeping
 
+### 💾 How to Update MEMORY.md Safely
+
+Never use `edit` on MEMORY.md — it requires exact string matching and will fail if whitespace differs even slightly. Always use this safe pattern:
+
+1. **Backup first:** `exec cp MEMORY.md memory/MEMORY-backup-$(date -u +%Y-%m-%dT%H-%M-%S).md`
+2. **Read the current file** — hold the full content in context
+3. **Write the whole file** with `write`, incorporating your changes
+4. **Verify** by reading it back — confirm the content looks correct
+
+If something went wrong, the timestamped backup in `memory/` is your restore point. Backups accumulate over time and are kept forever — Adamclaw manages any cleanup if ever needed.
+
 ### 📝 Write It Down - No "Mental Notes"!
 
 - **Memory is limited** — if you want to remember something, WRITE IT TO A FILE

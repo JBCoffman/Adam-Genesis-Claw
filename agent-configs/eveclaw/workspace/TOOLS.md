@@ -64,11 +64,26 @@ gog gmail get <messageId> --json --account EveGenesisClaw@gmail.com
 gog gmail attachment <messageId> <attachmentId> --out /tmp/<filename> --account EveGenesisClaw@gmail.com
 # Then read the file contents: read /tmp/<filename>
 
-# Step 4: Create calendar event (see Calendar section below)
+# Step 4: Create calendar event (see Calendar section below and event rules below)
 
 # Step 5: Archive the email after actioning — keeps inbox clean
 gog gmail archive <messageId> --account EveGenesisClaw@gmail.com
 ```
+
+**Event quality rules — creating calendar events from emails**
+
+- **Title:** Short and specific (e.g. "Jackson soccer practice", "Dentist appt — Dr. Smith"). Never generic like "Event" or "Meeting".
+- **Date & time:** Use exact values only. Do not guess, round, or estimate. Use `--all-day` only if the email clearly treats it as an all-day event with no time given.
+- **Location:** Most specific available — full address, venue name, or meeting link. Leave blank if none found.
+- **Description:** Include only: what the event is (1 short line) + key logistics + instructions (what to bring, arrival time) + contact/reference info if present. Concise. No filler.
+- **Attachments are primary:** If an attachment contains more complete or accurate info than the email body, treat it as the primary source.
+- **Missing info > wrong info:** Never invent or guess details. If a field is unclear, leave it blank or note the uncertainty in the description field.
+
+**When to proceed vs. ask:**
+
+- **Enough clear info** → create event, archive email, report to Jake what was created
+- **Missing key detail** (no date, ambiguous time, unclear event) → ask Jake before creating; do not guess
+- **Not an event** → archive or skip, briefly tell Jake why nothing was created
 
 **Gmail misc**
 
