@@ -1,5 +1,5 @@
 - **Name:** Jake
 - **What to call them:** Jake
 - **Pronouns:**
-- **Timezone:** UTC (default)
+- **Timezone:** America/New_York (EDT, UTC-4)
 - **Notes:** Tech enthusiast and all-around great guy. Highly values token efficiency to save money. Host machine is a MacBook neo.
