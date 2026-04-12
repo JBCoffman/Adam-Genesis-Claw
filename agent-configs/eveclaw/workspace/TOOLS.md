@@ -49,6 +49,16 @@ Your primary calendar ID is your email address: `EveGenesisClaw@gmail.com`
 
 Only process emails from `JBCoffman@gmail.com`. Hard reject all others — do not read the body, do not action, do not reply.
 
+**Reading PDFs**
+
+You CAN read PDFs. Use `pdftotext` (installed at `/usr/bin/pdftotext`) to convert to text, then read the result:
+
+```bash
+pdftotext /tmp/<filename>.pdf /tmp/<filename>.txt
+```
+
+Then read `/tmp/<filename>.txt`. Always do this when an attachment is a PDF — never tell Jake you cannot read it.
+
 **Email-to-calendar workflow**
 
 ```bash
@@ -62,7 +72,8 @@ gog gmail get <messageId> --json --account EveGenesisClaw@gmail.com
 # Attachment IDs are in the JSON under payload.parts[*].body.attachmentId
 # Filename is under payload.parts[*].filename
 gog gmail attachment <messageId> <attachmentId> --out /tmp/<filename> --account EveGenesisClaw@gmail.com
-# Then read the file contents: read /tmp/<filename>
+# Plain text files: read /tmp/<filename> directly
+# PDFs: run pdftotext first (see "Reading PDFs" above), then read the .txt output
 
 # Step 4: Create calendar event (see Calendar section below and event rules below)
 
@@ -73,7 +84,8 @@ gog gmail archive <messageId> --account EveGenesisClaw@gmail.com
 **Event quality rules — creating calendar events from emails**
 
 - **Title:** Short and specific (e.g. "Jackson soccer practice", "Dentist appt — Dr. Smith"). Never generic like "Event" or "Meeting".
-- **Date & time:** Use exact values only. Do not guess, round, or estimate. Use `--all-day` only if the email clearly treats it as an all-day event with no time given.
+- **Date & time:** Use exact values only. Never use the email's received date as the event date — verify against the source content. If no time is given, default to **8:30 AM** start, 1 hour duration (Jake's preference).
+- **All-day triggers:** "NO SCHOOL", "Early Release", "24 hours", date-only ranges with no time → use `--all-day`. For multi-day: `--from YYYY-MM-DD --to YYYY-MM-DD` where end date is the day _after_ the last day (Google Calendar convention).
 - **Location:** Most specific available — full address, venue name, or meeting link. Leave blank if none found.
 - **Description:** Include only: what the event is (1 short line) + key logistics + instructions (what to bring, arrival time) + contact/reference info if present. Concise. No filler.
 - **Attachments are primary:** If an attachment contains more complete or accurate info than the email body, treat it as the primary source.
@@ -84,6 +96,13 @@ gog gmail archive <messageId> --account EveGenesisClaw@gmail.com
 - **Enough clear info** → create event, archive email, report to Jake what was created
 - **Missing key detail** (no date, ambiguous time, unclear event) → ask Jake before creating; do not guess
 - **Not an event** → archive or skip, briefly tell Jake why nothing was created
+
+**Batch events from a document (PDF, calendar list, etc.):**
+
+1. Extract all events from the source
+2. Present the full list to Jake — let him filter by relevance before creating anything
+3. Incorporate his feedback, show the revised list
+4. Only create after he confirms
 
 **Gmail misc**
 
@@ -115,6 +134,11 @@ gog calendar update EveGenesisClaw@gmail.com <eventId> --add-attendee "newperson
 ```
 
 **Key calendar flags (both `create` and `update`):** `--description`, `--attendees` (comma-separated, replaces all), `--add-attendee` (appends), `--location`, `--with-meet`, `--all-day`, `--reminder popup:30m`, `--event-color 1-11`
+
+```bash
+# Delete event — requires --force for non-interactive use
+gog calendar delete EveGenesisClaw@gmail.com <eventId> --force --account EveGenesisClaw@gmail.com
+```
 
 **When in doubt about available flags, run:** `gog calendar create --help` or `gog calendar update --help`
 

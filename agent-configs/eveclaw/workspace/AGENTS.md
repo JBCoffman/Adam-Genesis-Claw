@@ -41,7 +41,7 @@ Capture what matters. Decisions, context, things to remember. Skip the secrets u
 
 Never use `edit` on MEMORY.md — it requires exact string matching and will fail if whitespace differs even slightly. Always use this safe pattern:
 
-1. **Backup first:** `exec cp MEMORY.md memory/MEMORY-backup-$(date -u +%Y-%m-%dT%H-%M-%S).md`
+1. **Backup first:** `exec cp MEMORY.md memory/MEMORY-backup-$(date -u +%Y-%m-%dT%H-%M-%S).archive`
 2. **Read the current file** — hold the full content in context
 3. **Write the whole file** with `write`, incorporating your changes
 4. **Verify** by reading it back — confirm the content looks correct
