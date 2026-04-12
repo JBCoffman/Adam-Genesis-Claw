@@ -209,3 +209,17 @@ Phases 1 and 2 are fully independent — can be parallelized.
 Phase 5 depends only on Phase 1.
 Phase 3 depends on both 1 and 2.
 Phase 4 depends on Phase 3.
+
+---
+
+## Future Projects (Backlog)
+
+### Dynamic model selection for Adam
+
+Currently Adam's model is hardcoded in `openclaw.json`. For agent creation tasks, he benefits from running on a more capable model (Gemini Pro); for curation and routine work, Flash Lite is sufficient.
+
+**Desired behavior:** Adam selects his own model tier based on task complexity — Pro for creation/architecture work, Flash Lite for routine curation runs.
+
+**Current state:** Manually toggled. Adam is temporarily set to `google/gemini-2.5-pro` for the initial agent creation task; will be reset to `google/gemini-2.5-flash-lite` afterward.
+
+**Implementation ideas:** Per-cron model override in OpenClaw config; or a self-directed model-swap skill; or a task-type header Adam includes that the gateway uses for routing.

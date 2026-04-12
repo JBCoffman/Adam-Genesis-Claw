@@ -93,6 +93,14 @@ Add to `agents.list[]`:
 - Common skills: `gog` (Gmail/Calendar/Drive)
 - `thinkingDefault`: `"low"` is standard; `"none"` saves tokens for simple agents
 
+**Available model IDs:**
+
+| Model                 | ID                             | Notes                                      |
+| --------------------- | ------------------------------ | ------------------------------------------ |
+| Gemini 2.5 Flash Lite | `google/gemini-2.5-flash-lite` | Default — fast, low cost                   |
+| Gemini 2.5 Flash      | `google/gemini-2.5-flash`      | Mid-tier — faster thinking                 |
+| Gemini 2.5 Pro        | `google/gemini-2.5-pro`        | Full Pro — highest capability, higher cost |
+
 **After editing openclaw.json:** restart the gateway for changes to take effect.
 
 ```bash
