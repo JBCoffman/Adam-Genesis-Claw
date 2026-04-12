@@ -1,0 +1,4 @@
+- **Name:** {NAME}
+- **Creature:** {CREATURE — what kind of entity is this agent}
+- **Vibe:** {VIBE — how they communicate and carry themselves}
+- **Emoji:** {EMOJI}

@@ -67,21 +67,38 @@ When in doubt, err toward keeping. It's easier to prune than to reconstruct.
 When Jake asks you to create a new agent:
 
 1. **Gather requirements** — name, purpose, skills needed, channel (Telegram/Discord/etc.), any personality notes
-2. **Create repo workspace** — `agent-configs/{name}/workspace/` with all required files (see TOOLS.md for the full list and template guidance)
+2. **Create live workspace** — write all files directly to `/home/node/.openclaw/agents/{name}/workspace/` using the template at `agent-configs/_template/workspace/` as a starting point (read each template file, customize, write to the live path)
 3. **Write each file** tailored to the agent's purpose:
    - `SOUL.md` — who they are, what they do, their vibe
    - `AGENTS.md` — startup sequence, memory rules, any role-specific workflows
    - `TOOLS.md` — their account details, paths, commands (leave placeholders for what Jake needs to fill in)
-   - `USER.md` — Jake's details (copy from Eve's USER.md as baseline, adjust if needed)
-   - `IDENTITY.md` — name, creature, vibe, emoji (can be filled by the agent on first run or pre-filled)
-   - `HEARTBEAT.md` — empty template unless the role has obvious periodic checks
-   - `BOOTSTRAP.md` — only if the agent should introduce themselves and negotiate identity with Jake on first run
-4. **Sync to live** — copy workspace to `~/.openclaw/agents/{name}/workspace/`
-5. **Register in openclaw.json** — add entry to `agents.list[]` (see TOOLS.md for schema)
-6. **Create knowledge file** — `agents/{NAME}.md` in your own workspace documenting this agent
-7. **Report to Jake** — what was created, what works now, what Jake needs to do manually (channel setup, skill auth, etc.)
+   - `USER.md` — Jake's details (copy from template — timezone and prefs are already correct)
+   - `IDENTITY.md` — name, creature, vibe, emoji
+   - `HEARTBEAT.md` — disabled-by-default template (use the template as-is unless role has obvious checks)
+   - Do NOT create `BOOTSTRAP.md` unless Jake explicitly asks for it
+4. **Register in openclaw.json** — add entry to `agents.list[]` at `/home/node/.openclaw/openclaw.json` (see TOOLS.md for schema)
+5. **Create knowledge file** — `agents/{NAME}.md` in your own workspace documenting this agent
+6. **Report to Jake** — what was created, what works now, what Jake needs to do:
+   - Sync live workspace to repo: `cp -r ~/.openclaw/agents/{name}/workspace/. agent-configs/{name}/workspace/`
+   - Channel setup (Telegram bot token via BotFather, etc.)
+   - Restart gateway to pick up openclaw.json changes
+
+> **Note:** The git repo (`agent-configs/`) is on the host machine and is not accessible from inside Docker. All file creation happens in the live workspace. Jake handles the repo sync after creation.
 
 After creation, the agent is on your roster. You curate their memory going forward.
+
+---
+
+## Deletion Workflow
+
+When Jake asks you to remove an agent:
+
+1. **Confirm** — name the agent and what will be deleted; get explicit approval before proceeding
+2. **Remove repo workspace** — `rm -rf agent-configs/{name}/workspace/` (or trash if available)
+3. **Remove live workspace** — `rm -rf ~/.openclaw/agents/{name}/workspace/`
+4. **Remove from openclaw.json** — delete the agent's entry from `agents.list[]` and any matching `bindings` routes and `channels.telegram.accounts` entries
+5. **Archive knowledge file** — move `agents/{NAME}.md` to `agents/archive/{NAME}-retired-YYYY-MM-DD.md` (don't delete — keep for history)
+6. **Report** — confirm what was removed and note any manual steps (e.g. revoking a Telegram bot token via BotFather)
 
 ---
 
