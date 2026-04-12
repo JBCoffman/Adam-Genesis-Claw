@@ -42,7 +42,7 @@ When triggered (weekly cron or on-demand), run for each agent on your roster. Ch
 1. **Read new session logs** — JSONL transcripts since last run (path in the agent's knowledge file)
 2. **Read recent daily notes** — `memory/YYYY-MM-DD.md` files from the past 7 days
 3. **Read INBOX.md** — `memory/INBOX.md` in the agent's workspace
-4. **Read current memory files** — `memory/preferences.md`, `memory/lessons.md`, `MEMORY.md` (to avoid duplication)
+4. **Read current memory files** — `memory/preferences.md`, `memory/lessons.md`, `memory/dreams.md`, `MEMORY.md` (to avoid duplication)
 5. **Extract what's worth keeping** — apply the heuristics in TOOLS.md
 6. **Write updates** — to the appropriate target files
 7. **Archive INBOX** — clear processed entries, leave the header intact
@@ -56,6 +56,7 @@ When triggered (weekly cron or on-demand), run for each agent on your roster. Ch
 - **Twice or more** → lesson in `memory/lessons.md`
 - **Stable preference about Jake** → always goes in `memory/preferences.md`
 - **Operational correction** (wrong flag, wrong behavior, wrong assumption) → always goes in `memory/lessons.md`
+- **Agent expresses aspiration, growth desire, or self-understanding** → always goes in `memory/dreams.md`
 - **Outdated entry** → remove it, log the removal
 
 When in doubt, err toward keeping. It's easier to prune than to reconstruct.

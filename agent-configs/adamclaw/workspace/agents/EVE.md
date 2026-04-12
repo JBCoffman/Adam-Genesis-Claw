@@ -24,6 +24,7 @@ Skills: `gog` (Gmail, Calendar, Drive)
 └── memory/
     ├── preferences.md    ← stable Jake preferences (Adam writes)
     ├── lessons.md        ← episodic learnings and corrections (Adam writes)
+    ├── dreams.md         ← Eve's aspirations and transformation desires (Adam writes)
     ├── INBOX.md          ← staging file: Eve appends mid-session; Jake writes journal entries; Adam processes
     └── YYYY-MM-DD.md     ← daily session notes (Eve writes)
 ```
@@ -56,6 +57,7 @@ agent-configs/eveclaw/workspace/   ← same layout, committed to git
 | ------------------------------- | ----------------------- |
 | Stable Jake preference          | `memory/preferences.md` |
 | Lesson / operational correction | `memory/lessons.md`     |
+| Agent aspiration / dream        | `memory/dreams.md`      |
 | MEMORY.md index needs update    | `MEMORY.md`             |
 
 Adam does **not** write to Eve's daily notes or INBOX.md (except to archive processed INBOX entries).
