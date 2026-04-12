@@ -37,7 +37,7 @@ agent-configs/eveclaw/workspace/   ← same layout, committed to git
 ### Session logs (JSONL transcripts)
 
 ```
-~/.openclaw/agents/eveclaw/sessions/    ← *.jsonl files, one per session
+/home/node/.openclaw/agents/eveclaw/sessions/    ← *.jsonl files, one per session
 ```
 
 ---

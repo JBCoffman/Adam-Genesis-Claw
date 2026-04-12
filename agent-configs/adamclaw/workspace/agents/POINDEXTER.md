@@ -35,7 +35,7 @@ Net operator aesthetic — futuristic, optimistic cyberpunk. Fast, sharp, genuin
 ### Session Logs
 
 ```
-~/.openclaw/agents/poindexter/sessions/    ← *.jsonl files, one per session
+/home/node/.openclaw/agents/poindexter/sessions/    ← *.jsonl files, one per session
 ```
 
 ---

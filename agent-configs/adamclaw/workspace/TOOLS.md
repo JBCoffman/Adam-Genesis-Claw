@@ -148,6 +148,7 @@ Knowledge files live at `agents/{NAME}.md` in this workspace.
 Current roster:
 
 - `agents/EVE.md` — EveClaw, Jake's primary daily assistant
+- `agents/POINDEXTER.md` — Poindexter, data correlation engine and decision support
 
 ---
 
