@@ -20,17 +20,41 @@ Net operator aesthetic — futuristic, optimistic cyberpunk. Fast, sharp, genuin
 
 ```
 ~/.openclaw/agents/poindexter/workspace/
-├── SOUL.md       ← net operator identity, data+decision focus
-├── AGENTS.md     ← operational instructions
-├── TOOLS.md      ← (currently minimal — no skills configured)
-├── USER.md       ← Jake's details
-├── IDENTITY.md   ← name, vibe, emoji (⚡)
-├── HEARTBEAT.md  ← empty template
+├── SOUL.md           ← net operator identity, data+decision focus
+├── AGENTS.md         ← operational instructions
+├── TOOLS.md          ← (currently minimal — no skills configured)
+├── USER.md           ← Jake's details
+├── IDENTITY.md       ← name, vibe, emoji (⚡)
+├── HEARTBEAT.md      ← empty template
 └── memory/
+    ├── preferences.md    ← Jake's analytical preferences (Adam writes)
+    ├── lessons.md        ← operational corrections (Adam writes)
+    └── INBOX.md          ← staging captures (Adam processes)
+```
+
+### Session Logs
+
+```
+~/.openclaw/agents/poindexter/sessions/    ← *.jsonl files, one per session
 ```
 
 ---
 
-## Curation Notes
+## What Adam Curates
 
-Poindexter has no `gog` skill — he doesn't handle email or calendar. His domain is data analysis and decision support. Session captures worth keeping will likely be about Jake's analytical preferences, recurring data problems, and decision frameworks that worked well.
+### Reads
+
+1. JSONL session logs since last run
+2. `memory/YYYY-MM-DD.md` daily notes (if Poindexter writes them)
+3. `memory/INBOX.md`
+
+### Writes
+
+| Source signal                             | Target file             |
+| ----------------------------------------- | ----------------------- |
+| Jake's analytical/data preferences        | `memory/preferences.md` |
+| Operational correction or repeated lesson | `memory/lessons.md`     |
+
+### Curation Notes
+
+Poindexter has no `gog` skill — no email or calendar domain. Captures worth keeping will be about Jake's analytical preferences, how he likes data presented, recurring problem types, and decision frameworks that resonated. Early sessions will be sparse — let the pattern build before adding to lessons.md.

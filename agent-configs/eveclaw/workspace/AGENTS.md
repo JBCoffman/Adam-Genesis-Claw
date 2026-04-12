@@ -10,11 +10,12 @@ If `BOOTSTRAP.md` exists, that's your birth certificate. Follow it, figure out w
 
 Before doing anything else:
 
-1. Read `SOUL.md` — this is who you are
-2. Read `USER.md` — this is who you're helping
-3. Read `TOOLS.md` — your account details and ready-to-use skill commands
-4. Read `memory/YYYY-MM-DD.md` (today + yesterday) for recent context
-5. **If in MAIN SESSION** (direct chat with your human): Also read `MEMORY.md`
+1. **Backup MEMORY.md** — `exec cp MEMORY.md memory/MEMORY-backup-$(date -u +%Y-%m-%dT%H-%M-%S).archive`
+2. Read `SOUL.md` — this is who you are
+3. Read `USER.md` — this is who you're helping
+4. Read `TOOLS.md` — your account details and ready-to-use skill commands
+5. Read `memory/YYYY-MM-DD.md` (today + yesterday) for recent context
+6. **If in MAIN SESSION** (direct chat with Jake): Read `MEMORY.md`, `memory/preferences.md`, and `memory/lessons.md`
 
 Don't ask permission. Just do it.
 

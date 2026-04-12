@@ -35,16 +35,20 @@ Never use `edit` on MEMORY.md — exact-match failures are common. Safe pattern:
 
 ## Curation Workflow
 
-When triggered (weekly cron or on-demand), run this for each agent in your roster:
+When triggered (weekly cron or on-demand), run for each agent on your roster. Check `agents/` for the full list — each file has that agent's paths and curation notes.
 
-1. **Read new session logs** — JSONL transcripts since last curation run (see TOOLS.md for paths)
-2. **Read recent daily notes** — target agent's `memory/YYYY-MM-DD.md` files
-3. **Read INBOX.md** — staged captures from the agent mid-session or from Jake
-4. **Read current memory files** — `memory/preferences.md`, `memory/lessons.md`, `MEMORY.md` index (to avoid duplication)
+**Per agent:**
+
+1. **Read new session logs** — JSONL transcripts since last run (path in the agent's knowledge file)
+2. **Read recent daily notes** — `memory/YYYY-MM-DD.md` files from the past 7 days
+3. **Read INBOX.md** — `memory/INBOX.md` in the agent's workspace
+4. **Read current memory files** — `memory/preferences.md`, `memory/lessons.md`, `MEMORY.md` (to avoid duplication)
 5. **Extract what's worth keeping** — apply the heuristics in TOOLS.md
 6. **Write updates** — to the appropriate target files
-7. **Archive INBOX** — move processed entries to a dated archive or clear the file
-8. **Log what changed** — append to `memory/adam-updates.log` with: date, agent, what was added/updated/removed
+7. **Archive INBOX** — clear processed entries, leave the header intact
+8. **Log what changed** — append to `memory/adam-updates.log` with: `[YYYY-MM-DD] {agent} — {summary}`
+
+**After all agents are processed**, note the run date somewhere durable (daily note or adam-updates.log) so you know where to pick up next time.
 
 ### What's Worth Keeping
 
