@@ -26,6 +26,25 @@ Parked ideas and future projects. Enough context to form a proper project later.
 
 ---
 
+## Trello Skill — ClawhHub Packaging
+
+**Context:** Eve's Trello integration is fully working (create, assign, move, archive, comment via the `trello` CLI). The CLI is a custom Node.js script baked into the Docker image — not an installable npm package.
+
+**Value:** Packaging it as a proper OpenClaw plugin and publishing to ClawhHub would let any OpenClaw instance install it via `openclaw install trello` instead of the current manual Dockerfile + credentials setup.
+
+**What it would take:**
+
+- Port `skills/trello/trello.js` into an OpenClaw plugin package structure
+- Publish to ClawhHub with proper manifest (`openclaw.plugin.json`)
+- Handle credential setup flow (API key + token) via OpenClaw's auth/config pattern
+- Write install docs
+
+**Current state:** Credential values are hardcoded as env vars in `.env` → `docker-compose.yml`. A proper plugin would surface these through OpenClaw's `config set` flow.
+
+**Open questions:** Should the board ID and member ID be configurable at install time, or discovered dynamically via the API?
+
+---
+
 ## Repo / Directory Naming Cleanup
 
 **Problem:** The local folder is `/Users/home/tools/Adamclaw/` and the GitHub repo is `JBCoffman/Adam-Genesis-Claw`. Both carry the agent's name at the infrastructure level, which is confusing since AdamClaw is one specific agent (alongside EveClaw, and any future agents). The top-level container should reflect the platform (OpenClaw), not an individual agent.

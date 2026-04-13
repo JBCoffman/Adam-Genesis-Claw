@@ -1,108 +1,134 @@
 ---
 name: trello
-description: Manage Trello boards, lists, and cards via the Trello REST API.
+description: Create and manage Trello cards on Jake's Eve board via the trello CLI.
 homepage: https://developer.atlassian.com/cloud/trello/rest/
 metadata:
   {
     "openclaw":
       {
         "emoji": "📋",
-        "requires": { "bins": ["jq"], "env": ["TRELLO_API_KEY", "TRELLO_TOKEN"] },
-        "install":
-          [
-            {
-              "id": "brew",
-              "kind": "brew",
-              "formula": "jq",
-              "bins": ["jq"],
-              "label": "Install jq (brew)",
-            },
-          ],
+        "requires": { "bins": ["trello"], "env": ["TRELLO_API_KEY", "TRELLO_TOKEN"] },
       },
   }
 ---
 
 # Trello Skill
 
-Manage Trello boards, lists, and cards directly from OpenClaw.
+Create and manage cards on Jake's Eve Trello board using the `trello` CLI.
 
-## Setup
+Credentials are pre-configured in the environment. You do not need to pass API keys manually.
 
-1. Get your API key: https://trello.com/app-key
-2. Generate a token (click "Token" link on that page)
-3. Set environment variables:
-   ```bash
-   export TRELLO_API_KEY="your-api-key"
-   export TRELLO_TOKEN="your-token"
-   ```
+## Board Setup
 
-## Usage
+Jake's board: **Eve** — a simple Kanban with three lists:
 
-All commands use curl to hit the Trello REST API.
+| List        | Purpose               |
+| ----------- | --------------------- |
+| To Do       | Default for new cards |
+| In Progress | Work underway         |
+| Done        | Completed work        |
 
-### List boards
-
-```bash
-curl -s "https://api.trello.com/1/members/me/boards?key=$TRELLO_API_KEY&token=$TRELLO_TOKEN" | jq '.[] | {name, id}'
-```
-
-### List lists in a board
-
-```bash
-curl -s "https://api.trello.com/1/boards/{boardId}/lists?key=$TRELLO_API_KEY&token=$TRELLO_TOKEN" | jq '.[] | {name, id}'
-```
-
-### List cards in a list
-
-```bash
-curl -s "https://api.trello.com/1/lists/{listId}/cards?key=$TRELLO_API_KEY&token=$TRELLO_TOKEN" | jq '.[] | {name, id, desc}'
-```
+## Commands
 
 ### Create a card
 
 ```bash
-curl -s -X POST "https://api.trello.com/1/cards?key=$TRELLO_API_KEY&token=$TRELLO_TOKEN" \
-  -d "idList={listId}" \
-  -d "name=Card Title" \
-  -d "desc=Card description"
+trello create-card "Card title"
+trello create-card "Card title" --desc "More detail"
+trello create-card "Card title" --list "In Progress"
+trello create-card "Card title" --assign
+trello create-card "Card title" --due Friday
+trello create-card "Card title" --assign --due 2026-05-01 --desc "Some notes"
 ```
 
-### Move a card to another list
+- `--list` accepts a list name ("To Do", "In Progress", "Done") or a list ID
+- `--assign` assigns the card to Jake automatically
+- `--due` accepts ISO dates (2026-04-20) or day names (Monday, Friday, etc.)
+- Default list is **To Do** if `--list` is omitted
+
+### Assign a card to Jake
 
 ```bash
-curl -s -X PUT "https://api.trello.com/1/cards/{cardId}?key=$TRELLO_API_KEY&token=$TRELLO_TOKEN" \
-  -d "idList={newListId}"
+trello assign <cardId>
+```
+
+### Set a due date
+
+```bash
+trello set-due <cardId> <date>
+# date can be ISO (2026-04-20) or a day name (Friday)
+```
+
+### List all open cards on the board
+
+```bash
+trello list-cards
+trello list-cards --list "To Do"
+trello list-cards --list "In Progress"
+```
+
+Each line is: `<cardId>  <card name>`
+
+### Move a card to a different list
+
+```bash
+trello move-card <cardId> "Done"
+trello move-card <cardId> "In Progress"
+trello move-card <cardId> "To Do"
+```
+
+### Archive (close) a card
+
+```bash
+trello archive-card <cardId>
 ```
 
 ### Add a comment to a card
 
 ```bash
-curl -s -X POST "https://api.trello.com/1/cards/{cardId}/actions/comments?key=$TRELLO_API_KEY&token=$TRELLO_TOKEN" \
-  -d "text=Your comment here"
+trello add-comment <cardId> "Comment text here"
 ```
 
-### Archive a card
+This is a routine, safe operation — no special approval needed. Call it after every action.
+
+### List all lists (with IDs)
 
 ```bash
-curl -s -X PUT "https://api.trello.com/1/cards/{cardId}?key=$TRELLO_API_KEY&token=$TRELLO_TOKEN" \
-  -d "closed=true"
+trello list-lists
 ```
 
-## Notes
-
-- Board/List/Card IDs can be found in the Trello URL or via the list commands
-- The API key and token provide full access to your Trello account - keep them secret!
-- Rate limits: 300 requests per 10 seconds per API key; 100 requests per 10 seconds per token; `/1/members` endpoints are limited to 100 requests per 900 seconds
-
-## Examples
+### Get card details
 
 ```bash
-# Get all boards
-curl -s "https://api.trello.com/1/members/me/boards?key=$TRELLO_API_KEY&token=$TRELLO_TOKEN&fields=name,id" | jq
-
-# Find a specific board by name
-curl -s "https://api.trello.com/1/members/me/boards?key=$TRELLO_API_KEY&token=$TRELLO_TOKEN" | jq '.[] | select(.name | contains("Work"))'
-
-# Get all cards on a board
-curl -s "https://api.trello.com/1/boards/{boardId}/cards?key=$TRELLO_API_KEY&token=$TRELLO_TOKEN" | jq '.[] | {name, list: .idList}'
+trello get-card <cardId>
 ```
+
+## Natural Language Patterns
+
+When Jake says something like:
+
+- "Create a Trello card: buy milk" → `trello create-card "buy milk"`
+- "Add a card for fixing the deck light, assign to me" → `trello create-card "Fix the deck light" --assign`
+- "Trello: pick up dry cleaning, due Friday" → `trello create-card "Pick up dry cleaning" --due Friday`
+- "Create a card in In Progress for the bathroom tiles" → `trello create-card "Bathroom tiles" --list "In Progress"`
+- "Make a Trello task: call the vet, assign me, due Thursday" → `trello create-card "Call the vet" --assign --due Thursday`
+
+## Standing Rules
+
+**Always comment on every action.** After any `move-card`, `archive-card`, `assign`, or `set-due` call, immediately follow it with `trello add-comment <cardId> "<action taken>"`. Do not skip this step and do not ask for approval — `add-comment` is a safe, routine operation.
+
+Comment format: be brief and factual. Examples:
+
+- `"Moved to Done by Eve"`
+- `"Assigned to Jake by Eve"`
+- `"Due date set to Friday by Eve"`
+- `"Archived by Eve"`
+
+When Jake asks to move or archive cards without giving IDs, first run `trello list-cards` to get the IDs, then operate on each one. For example:
+
+- "Move all cards to Done" → `trello list-cards`, then for each: `trello move-card <id> Done` + `trello add-comment <id> "Moved to Done by Eve"`
+- "Archive the buy milk card" → `trello list-cards`, find it, `trello archive-card <id>` + `trello add-comment <id> "Archived by Eve"`
+- "Mark the deck light card as done" → `trello list-cards`, find it, `trello move-card <id> Done` + `trello add-comment <id> "Moved to Done by Eve"`
+
+If the message is ambiguous about which list, default to **To Do** unless Jake specifies otherwise.
+Always confirm success by reporting the card name and URL from the command output.

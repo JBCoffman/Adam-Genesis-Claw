@@ -11,6 +11,8 @@ services:
       CLAUDE_WEB_COOKIE: ${CLAUDE_WEB_COOKIE:-}
       TZ: ${OPENCLAW_TZ:-UTC}
       GOG_KEYRING_PASSWORD: ${GOG_KEYRING_PASSWORD:-}
+      TRELLO_API_KEY: ${TRELLO_API_KEY:-}
+      TRELLO_TOKEN: ${TRELLO_TOKEN:-}
       # XDG base dirs — redirect skill CLI config into the volume-mounted .openclaw
       # directory so credentials survive container rebuilds. Any XDG-compliant skill
       # binary (gog, and future CLIs) will automatically store config here.

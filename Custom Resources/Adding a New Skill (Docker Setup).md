@@ -57,6 +57,113 @@ docker exec adamclaw-openclaw-gateway-1 cat /app/skills/<skill-id>/SKILL.md
 
 ---
 
+## Skill Types
+
+**Type A — Pre-built binary skill:** Download and install a released binary (e.g. `gog`, weather tools). Follow Steps 2–6 below.
+
+**Type B — Custom Node.js skill:** Write a Node.js CLI script and bake it into the image. Skip the binary download — instead place the script in `skills/<id>/<id>.js` and add a Dockerfile symlink step. See "Custom Node.js Skills" section below before Step 2.
+
+---
+
+## Custom Node.js Skills
+
+When a skill doesn't exist as an installable binary — or you need behavior the binary doesn't provide — write a custom Node.js CLI that lives in the repo.
+
+### Pattern
+
+1. Create `skills/<skill-id>/<skill-id>.js` (executable Node.js script with `#!/usr/bin/env node`)
+2. Add credentials to `.env` and wire through `docker-compose.yml` environment (same as `GOG_KEYRING_PASSWORD` pattern)
+3. In `Dockerfile`, after the `COPY --from=runtime-assets ... /app/skills ./skills` line, add:
+
+```dockerfile
+# Install <skill-name> CLI
+RUN chmod +x /app/skills/<skill-id>/<skill-id>.js && \
+    ln -sf /app/skills/<skill-id>/<skill-id>.js /usr/local/bin/<skill-id>
+```
+
+4. Register in `openclaw.json` (the skill may already exist in `skills.entries` as `enabled: false` — check before adding)
+5. Write SKILL.md — see "Writing Effective SKILL.md Files" below
+
+### Key constraint
+
+`skills/` is baked into the Docker image at build time — it is **not volume-mounted**. Any change to the CLI script or SKILL.md requires a full image rebuild:
+
+```bash
+docker compose down && docker build -t openclaw:local . && docker compose up -d
+```
+
+### Testing before Docker
+
+Test the Node.js script locally before rebuilding:
+
+```bash
+TRELLO_API_KEY=<key> TRELLO_TOKEN=<token> node skills/<skill-id>/<skill-id>.js <command>
+```
+
+All commands should work locally. Only rebuild Docker once local tests pass.
+
+---
+
+## Writing Effective SKILL.md Files
+
+The SKILL.md is injected into the agent's system prompt when the skill is active. A poor SKILL.md causes the agent to hallucinate command names, use wrong syntax, or add unnecessary approval gates. Follow these principles:
+
+### Document the actual binary, not the API
+
+The SKILL.md must describe the CLI that is actually deployed in the container. Do not document `curl` commands or raw API endpoints if there is a binary available — the agent will try to use whatever you document.
+
+### Think through all operations before writing the CLI
+
+Before writing the CLI, list every operation the agent might need — not just the happy path. Common gaps found during testing:
+
+- Created cards but had no way to **list** them (needed to bulk-move by name)
+- Created cards but had no way to **move** them between lists
+- Moved cards but had no way to **comment** on the action taken
+
+For any entity-management skill, the complete CRUD set is usually: `create`, `list`, `get`, `update/move`, `archive/delete`, plus `add-comment` if the service supports it.
+
+### Mark routine write operations as safe
+
+If an operation is write-but-safe (posting a comment, adding a label), say so explicitly in SKILL.md:
+
+```markdown
+This is a routine, safe operation — no special approval needed. Call it after every action.
+```
+
+Without this, the agent may add `ask: "always"` to the `exec` call, which blocks completely on Telegram (no approval UI). Only destructive or irreversible operations warrant approval gates.
+
+### Add standing behavioral rules
+
+Use a "Standing Rules" section for patterns the agent should always follow — not just what commands exist but when and how to chain them:
+
+```markdown
+## Standing Rules
+
+**Always comment on every action.** After any move-card, archive-card, assign, or set-due call,
+immediately follow with `trello add-comment <cardId> "<action taken>"`.
+```
+
+### Include natural language → command mapping
+
+Agents reason about intent first, then look for matching commands. Explicit mappings reduce reasoning steps and hallucination:
+
+```markdown
+- "Move all cards to Done" → `trello list-cards`, then `trello move-card <id> Done` for each
+- "Archive the buy milk card" → `trello list-cards`, find ID, `trello archive-card <id>`
+```
+
+### Check if the skill already exists in the registry
+
+Before creating a skill from scratch, check `openclaw.json`:
+
+```bash
+python3 -c "import json; d=json.load(open('/Users/home/.openclaw/openclaw.json')); print([k for k in d['skills']['entries']])" | tr ',' '\n'
+```
+
+Many skills are pre-registered as `enabled: false`. If the skill ID exists, only the binary and SKILL.md are needed — the registry entry is already there.
+
+---
+
 ## Step 2 — Add the Binary to the Dockerfile
 
 Binaries **must be baked into the image** at build time. Installing inside a running container is lost on restart.
@@ -247,9 +354,19 @@ docker exec adamclaw-openclaw-gateway-1 <tool> auth status
 
 ## Installed Skills (keep current)
 
-| Skill | Binary         | Auth                               | Agents with access | Notes                                                |
-| ----- | -------------- | ---------------------------------- | ------------------ | ---------------------------------------------------- |
-| `gog` | `gog` (gogcli) | OAuth — `EveGenesisClaw@gmail.com` | EveClaw only       | `eveclaw.skills: ["gog"]`; AdamClaw has `skills: []` |
+| Skill    | Binary                    | Type             | Auth                               | Agents with access | Notes                                                                              |
+| -------- | ------------------------- | ---------------- | ---------------------------------- | ------------------ | ---------------------------------------------------------------------------------- |
+| `gog`    | `gog` (gogcli)            | Pre-built binary | OAuth — `EveGenesisClaw@gmail.com` | EveClaw only       | `eveclaw.skills: ["gog"]`                                                          |
+| `trello` | `trello` (custom Node.js) | Custom script    | API key + token in `.env`          | EveClaw only       | `skills/trello/trello.js` → `/usr/local/bin/trello`; board IDs hardcoded in script |
+
+---
+
+## Trello API Credential Notes
+
+- The old `https://trello.com/app-key` page now redirects to the Power-Up Admin Portal
+- To get credentials: go to https://trello.com/power-ups/admin → create a new Power-Up → the API key is on the integration details page
+- Token generation URL still works: `https://trello.com/1/authorize?expiration=never&scope=read,write&response_type=token&name=EveClaw&key=YOUR_API_KEY`
+- The "secret" shown on the Power-Up page is not used — only the API key and the generated token are needed
 
 ---
 
