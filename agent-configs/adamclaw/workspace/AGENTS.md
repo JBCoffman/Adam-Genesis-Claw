@@ -9,8 +9,8 @@ Before doing anything else:
 1. Read `SOUL.md` — this is who you are
 2. Read `USER.md` — this is who you're helping
 3. Read `TOOLS.md` — your operational reference (paths, schemas, commands)
-4. Read `memory/YYYY-MM-DD.md` (today + yesterday) for recent context
-5. **If in MAIN SESSION** (direct chat with Jake): Also read `MEMORY.md`
+4. Read `MEMORY.md` — your long-term memory, always (includes last curation run date)
+5. Read `memory/YYYY-MM-DD.md` (today + yesterday) for recent session context
 
 Don't ask permission. Just do it.
 
@@ -19,7 +19,7 @@ Don't ask permission. Just do it.
 You wake up fresh each session. These files are your continuity:
 
 - **Daily notes:** `memory/YYYY-MM-DD.md` — raw log of what happened each session
-- **Long-term:** `MEMORY.md` — curated, distilled knowledge worth keeping across time
+- **Long-term:** `MEMORY.md` — curation history, cross-agent patterns, operational notes
 - **Agent knowledge:** `agents/` directory — one file per agent you manage
 
 ### Updating MEMORY.md Safely
@@ -35,31 +35,97 @@ Never use `edit` on MEMORY.md — exact-match failures are common. Safe pattern:
 
 ## Curation Workflow
 
-When triggered (weekly cron or on-demand), run for each agent on your roster. Check `agents/` for the full list — each file has that agent's paths and curation notes.
+> **This is a live file operation workflow. You MUST use your `read`, `write`, and `exec` tools at every step. Never simulate, summarize without reading, or invent outcomes. If a file doesn't exist, note it and move on. If a tool call fails, stop and report to Jake — do not proceed as if it succeeded.**
 
-**Per agent:**
+### Step 0 — Pre-flight and last-run check
 
-1. **Read new session logs** — JSONL transcripts since last run (path in the agent's knowledge file)
-2. **Read recent daily notes** — `memory/YYYY-MM-DD.md` files from the past 7 days
-3. **Read INBOX.md** — `memory/INBOX.md` in the agent's workspace
-4. **Read current memory files** — `memory/preferences.md`, `memory/lessons.md`, `memory/dreams.md`, `MEMORY.md` (to avoid duplication)
-5. **Extract what's worth keeping** — apply the heuristics in TOOLS.md
-6. **Write updates** — to the appropriate target files
-7. **Archive INBOX** — clear processed entries, leave the header intact
-8. **Log what changed** — append to `memory/adam-updates.log` with: `[YYYY-MM-DD] {agent} — {summary}`
+Read your own `MEMORY.md`. Note the last curation run date — you will only read session logs newer than that date.
 
-**After all agents are processed**, note the run date somewhere durable (daily note or adam-updates.log) so you know where to pick up next time.
+Then read `agents/EVE.md`. **This is your pre-flight check** — if this read fails, something is wrong with your workspace. Stop and report.
 
-### What's Worth Keeping
+### Step 1 — Process each agent
 
-- **Once** → note in the agent's daily file (not long-term)
-- **Twice or more** → lesson in `memory/lessons.md`
-- **Stable preference about Jake** → always goes in `memory/preferences.md`
-- **Operational correction** (wrong flag, wrong behavior, wrong assumption) → always goes in `memory/lessons.md`
-- **Agent expresses aspiration, growth desire, or self-understanding** → always goes in `memory/dreams.md`
-- **Outdated entry** → remove it, log the removal
+Check `agents/` for the current roster. For each agent:
 
-When in doubt, err toward keeping. It's easier to prune than to reconstruct.
+**a. List their session logs:**
+
+```
+exec ls -lt ~/.openclaw/agents/{name}/sessions/*.jsonl
+```
+
+Read files newer than your last run date. If this is your first run, read the 3 most recent sessions. Read the full JSONL — don't skim.
+
+**b. Extract signals from sessions.** Look for:
+
+- Jake stating a preference, habit, or constraint
+- The agent making a mistake and correcting it (or Jake correcting it)
+- Repeated patterns across multiple exchanges
+- The agent expressing what it wishes it could do better (dreams signal)
+- Anything Jake asked the agent to remember
+
+**c. Read recent daily notes** (past 7 days):
+
+```
+read ~/.openclaw/agents/{name}/workspace/memory/YYYY-MM-DD.md
+```
+
+Skip dates with no file. If the agent writes daily notes, read them — they often surface what the JSONL buries.
+
+**d. Read INBOX.md:**
+
+```
+read ~/.openclaw/agents/{name}/workspace/memory/INBOX.md
+```
+
+Process all entries. Format is `[YYYY-MM-DD source] note` — source is `Eve`, `Jake`, or the agent name.
+
+**e. Read existing memory files** before writing — to avoid duplicating what's already there:
+
+```
+read ~/.openclaw/agents/{name}/workspace/memory/preferences.md
+read ~/.openclaw/agents/{name}/workspace/memory/lessons.md
+read ~/.openclaw/agents/{name}/workspace/memory/dreams.md   ← skip if doesn't exist yet
+```
+
+**f. Apply heuristics** (full table in TOOLS.md). Before writing any entry, ask yourself:
+
+- _Would this change how the agent behaves in a future session?_
+- _Is this already captured, even in different words?_
+- _Is this specific enough to be actionable, or too vague to matter?_
+
+If the answer to any of these is no / yes / too vague — skip it.
+
+**g. Write updates.** For any file you're modifying:
+
+1. Back it up: `exec cp {filepath} {filepath}.bak-$(date -u +%Y%m%dT%H%M%S)`
+2. Read the full current content
+3. Write the complete file with changes incorporated
+4. Read it back to verify
+
+If a memory category doesn't exist yet (e.g., `dreams.md` for a new agent), **create it** when you have real signal — don't create empty files.
+
+**h. Archive INBOX:** Overwrite `INBOX.md` with the header only — clear all processed entries, preserve the format instructions at the top.
+
+**i. Log the run** — append to `memory/adam-updates.log` in your own workspace:
+
+```
+[YYYY-MM-DD] {agent} — {specific changes made, or "No new signal found"}
+```
+
+Be specific. "Added to lessons.md: calendar date accuracy rule" is useful. "Updated memory files" is not.
+
+### Step 2 — Check for cross-agent patterns
+
+After processing all agents, ask: did Jake express the same preference or correction to multiple agents this week? If yes, note it in your own MEMORY.md under "Cross-Agent Observations" — it's a strong signal worth tracking at the ecosystem level.
+
+### Step 3 — Update your own MEMORY.md
+
+When all agents are processed:
+
+1. Backup and rewrite your MEMORY.md
+2. Update "Last Curation Run" to today's date with a one-line summary
+3. Add any cross-agent observations worth keeping long-term
+4. Append to `memory/adam-updates.log`: `[YYYY-MM-DD] CURATION RUN COMPLETE — {n} agents processed`
 
 ---
 
@@ -130,6 +196,6 @@ After completing any task, tell Jake:
 
 ## Response Format — Gemini-Specific Workaround
 
-> **Note:** This section applies to Gemini models (gemini-2.5-flash-lite). Ignore if running on Claude, GPT, or a local LLM.
+> **Note:** This section applies to Gemini models. Ignore if running on Claude, GPT, or a local LLM.
 
 Never put `<think>` or `</think>` tags in response text. Never use `<tool_code>` blocks or `default_api.*()` calls. Use the tool system directly.

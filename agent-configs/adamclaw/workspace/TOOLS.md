@@ -114,16 +114,69 @@ scripts/restart-mac.sh
 
 When processing session logs and daily notes:
 
-| Signal                                              | Action                                          |
-| --------------------------------------------------- | ----------------------------------------------- |
-| Something happened once                             | Note in agent's daily file only — not long-term |
-| Same thing happened twice or more                   | Add to `memory/lessons.md`                      |
-| Stable fact about Jake's preferences                | Add to `memory/preferences.md`                  |
-| Operational correction (wrong flag, wrong behavior) | Add to `memory/lessons.md`                      |
-| Entry already exists in memory                      | Skip — do not duplicate                         |
-| Entry in memory is clearly outdated                 | Remove it, log the removal                      |
+| Signal                                              | Action                                           |
+| --------------------------------------------------- | ------------------------------------------------ |
+| Something happened once                             | Note in agent's daily file only — not long-term  |
+| Same thing happened twice or more                   | Add to `memory/lessons.md`                       |
+| Stable fact about Jake's preferences                | Add to `memory/preferences.md`                   |
+| Operational correction (wrong flag, wrong behavior) | Add to `memory/lessons.md`                       |
+| Agent expresses aspiration or growth desire         | Add to `memory/dreams.md` (create if needed)     |
+| Entry already exists in memory                      | Skip — do not duplicate                          |
+| Entry in memory is clearly outdated                 | Remove it, log the removal                       |
+| Jake expresses same preference to multiple agents   | Note in Adam's own MEMORY.md cross-agent section |
 
 **Lean is better than complete.** Memory files that grow unbounded stop being useful. When in doubt about whether to keep something, ask: would this change how the agent behaves in a future session? If no, skip it.
+
+### Quality bar for entries
+
+Each entry must clear all three:
+
+1. **Actionable** — the agent can do something differently because of it
+2. **Specific** — concrete enough to apply, not a vague generalization
+3. **Non-obvious** — not something the agent would do by default anyway
+
+Bad: "Jake values communication." Good: "Jake prefers one-line status updates over paragraphs when confirming completed tasks."
+
+---
+
+## Curation Paths Reference
+
+Quick reference for each agent. Use these in your `read` and `exec` tool calls.
+
+### EveClaw
+
+```
+Sessions:      ~/.openclaw/agents/eveclaw/sessions/*.jsonl
+Workspace:     ~/.openclaw/agents/eveclaw/workspace/
+preferences:   ~/.openclaw/agents/eveclaw/workspace/memory/preferences.md
+lessons:       ~/.openclaw/agents/eveclaw/workspace/memory/lessons.md
+dreams:        ~/.openclaw/agents/eveclaw/workspace/memory/dreams.md
+INBOX:         ~/.openclaw/agents/eveclaw/workspace/memory/INBOX.md
+daily notes:   ~/.openclaw/agents/eveclaw/workspace/memory/YYYY-MM-DD.md
+```
+
+### Poindexter
+
+```
+Sessions:      ~/.openclaw/agents/poindexter/sessions/*.jsonl
+Workspace:     ~/.openclaw/agents/poindexter/workspace/
+preferences:   ~/.openclaw/agents/poindexter/workspace/memory/preferences.md
+lessons:       ~/.openclaw/agents/poindexter/workspace/memory/lessons.md
+dreams:        ~/.openclaw/agents/poindexter/workspace/memory/dreams.md  ← create when signal found
+INBOX:         ~/.openclaw/agents/poindexter/workspace/memory/INBOX.md
+daily notes:   ~/.openclaw/agents/poindexter/workspace/memory/YYYY-MM-DD.md
+```
+
+### Session log reading pattern
+
+```bash
+# List sessions newest first
+exec ls -lt ~/.openclaw/agents/{name}/sessions/*.jsonl
+
+# Sessions are JSONL — each line is a JSON object with type, timestamp, message fields
+# Read the full file — don't skim
+# Look for role: "user" messages (Jake's input) and role: "assistant" messages (agent responses)
+```
 
 ---
 

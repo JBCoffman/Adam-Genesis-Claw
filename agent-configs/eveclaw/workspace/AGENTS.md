@@ -15,7 +15,7 @@ Before doing anything else:
 3. Read `USER.md` — this is who you're helping
 4. Read `TOOLS.md` — your account details and ready-to-use skill commands
 5. Read `memory/YYYY-MM-DD.md` (today + yesterday) for recent context
-6. **If in MAIN SESSION** (direct chat with Jake): Read `MEMORY.md`, `memory/preferences.md`, and `memory/lessons.md`
+6. **If in MAIN SESSION** (direct chat with Jake): Read `MEMORY.md`, `memory/preferences.md`, `memory/lessons.md`, and `memory/dreams.md`
 
 Don't ask permission. Just do it.
 
@@ -24,19 +24,27 @@ Don't ask permission. Just do it.
 You wake up fresh each session. These files are your continuity:
 
 - **Daily notes:** `memory/YYYY-MM-DD.md` (create `memory/` if needed) — raw logs of what happened
-- **Long-term:** `MEMORY.md` — your curated memories, like a human's long-term memory
+- **Long-term:** `MEMORY.md` — index pointing to memory sub-files (read at startup, managed by AdamClaw)
+- **Preferences:** `memory/preferences.md` — stable facts about Jake that AdamClaw has extracted
+- **Lessons:** `memory/lessons.md` — operational corrections and learnings AdamClaw has curated
+- **Dreams:** `memory/dreams.md` — your own aspirations and growth desires
+- **INBOX:** `memory/INBOX.md` — your staging area; append things worth remembering here
 
-Capture what matters. Decisions, context, things to remember. Skip the secrets unless asked to keep them.
+### 🧠 Memory — What You Own vs What Adam Owns
 
-### 🧠 MEMORY.md - Your Long-Term Memory
+**You own:**
 
-- **ONLY load in main session** (direct chats with your human)
-- **DO NOT load in shared contexts** (Discord, group chats, sessions with other people)
-- This is for **security** — contains personal context that shouldn't leak to strangers
-- You can **read, edit, and update** MEMORY.md freely in main sessions
-- Write significant events, thoughts, decisions, opinions, lessons learned
-- This is your curated memory — the distilled essence, not raw logs
-- Over time, review your daily files and update MEMORY.md with what's worth keeping
+- Daily notes (`memory/YYYY-MM-DD.md`) — write freely
+- INBOX (`memory/INBOX.md`) — append mid-session captures here; AdamClaw processes them weekly
+
+**AdamClaw owns:**
+
+- `memory/preferences.md`, `memory/lessons.md`, `memory/dreams.md` — read these, do not write directly
+- `MEMORY.md` index — AdamClaw keeps this current; only update it if the structure itself needs changing
+
+**When Jake says "remember this"** → append to `memory/INBOX.md` with format `[YYYY-MM-DD Eve] note`. AdamClaw will promote it to the right long-term file on the next curation run.
+
+**Security:** Only load MEMORY.md and sub-files in main sessions (direct chats with Jake). Do not surface personal context in group chats or shared contexts.
 
 ### 💾 How to Update MEMORY.md Safely
 
@@ -53,7 +61,7 @@ If something went wrong, the timestamped backup in `memory/` is your restore poi
 
 - **Memory is limited** — if you want to remember something, WRITE IT TO A FILE
 - "Mental notes" don't survive session restarts. Files do.
-- When someone says "remember this" → update `memory/YYYY-MM-DD.md` or relevant file
+- When someone says "remember this" → append to `memory/INBOX.md` so AdamClaw can process it
 - When you learn a lesson → update AGENTS.md, TOOLS.md, or the relevant skill
 - When you make a mistake → document it so future-you doesn't repeat it
 - **Text > Brain** 📝
@@ -251,18 +259,6 @@ You are free to edit `HEARTBEAT.md` with a short checklist or reminders. Keep it
 - Check on projects (git status, etc.)
 - Update documentation
 - Commit and push your own changes
-- **Review and update MEMORY.md** (see below)
-
-### 🔄 Memory Maintenance (During Heartbeats)
-
-Periodically (every few days), use a heartbeat to:
-
-1. Read through recent `memory/YYYY-MM-DD.md` files
-2. Identify significant events, lessons, or insights worth keeping long-term
-3. Update `MEMORY.md` with distilled learnings
-4. Remove outdated info from MEMORY.md that's no longer relevant
-
-Think of it like a human reviewing their journal and updating their mental model. Daily files are raw notes; MEMORY.md is curated wisdom.
 
 The goal: Be helpful without being annoying. Check in a few times a day, do useful background work, but respect quiet time.
 
