@@ -1,4 +1,7 @@
-# Adam's Curation Audit Log
-# Format: [YYYY-MM-DD] {agent} — {summary of changes}
-# Append one entry per agent per curation run. Never overwrite.
+[2026-04-20] poindexter — Added to preferences.md: Persona preference. Added to dreams.md: Refined self-representation. INBOX.md archived (0 entries).
 
+[2026-04-20] eveclaw — MANUAL EDIT SESSION (via Claude Code, not a curation run). Full workspace overhaul for Flash Lite optimization: AGENTS.md rewritten (266→70 lines, routing table added, obsolete <think>/<final> section removed); SOUL.md rewritten (absorbed IDENTITY.md); TOOLS.md rewritten (150→100 lines, removed duplicate email security, added explicit calendarId syntax warning, all-day date format callout); IDENTITY.md deleted. MEMORY.md updated to reflect new file structure.
+
+[2026-04-20] eveclaw — MANUAL EDIT SESSION (continued). Added to lessons.md: (1) "inbox"/"emails" = Gmail, run gog gmail search — never a workspace file; (2) all-day event --from/--to must be YYYY-MM-DD with no time component, T... suffix causes 400 error. memory/INBOX.md renamed to memory/adam-queue.md to eliminate word collision with Gmail inbox.
+
+[2026-04-20] ECOSYSTEM — adam-queue.md rename applied across all agents: eveclaw (INBOX.md → adam-queue.md), poindexter (INBOX.md → adam-queue.md). Adam's own AGENTS.md, TOOLS.md, EVE.md, and SOUL.md updated to reflect rename and new three-pillar role (Memory Curator + Agent Optimizer + Creation Agent). Agent template (_template/workspace/) refreshed to lean structure — IDENTITY.md removed from template, AGENTS.md now uses routing table pattern. Eve Troubleshooting Guide added to Custom Resources.

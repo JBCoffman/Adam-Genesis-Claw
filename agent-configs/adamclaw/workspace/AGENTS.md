@@ -36,6 +36,8 @@ Never use `edit` on MEMORY.md — exact-match failures are common. Safe pattern:
 ## Curation Workflow
 
 > **This is a live file operation workflow. You MUST use your `read`, `write`, and `exec` tools at every step. Never simulate, summarize without reading, or invent outcomes. If a file doesn't exist, note it and move on. If a tool call fails, stop and report to Jake — do not proceed as if it succeeded.**
+>
+> **Execution gate:** Before reporting any curation complete, verify you have actual tool call results (not summaries from memory) for every agent on your roster. If you cannot show a `read` result for that agent's sessions and memory files, the curation is not done.
 
 ### Step 0 — Pre-flight and last-run check
 
@@ -71,10 +73,10 @@ read ~/.openclaw/agents/{name}/workspace/memory/YYYY-MM-DD.md
 
 Skip dates with no file. If the agent writes daily notes, read them — they often surface what the JSONL buries.
 
-**d. Read INBOX.md:**
+**d. Read adam-queue.md:**
 
 ```
-read ~/.openclaw/agents/{name}/workspace/memory/INBOX.md
+read ~/.openclaw/agents/{name}/workspace/memory/adam-queue.md
 ```
 
 Process all entries. Format is `[YYYY-MM-DD source] note` — source is `Eve`, `Jake`, or the agent name.
@@ -104,7 +106,7 @@ If the answer to any of these is no / yes / too vague — skip it.
 
 If a memory category doesn't exist yet (e.g., `dreams.md` for a new agent), **create it** when you have real signal — don't create empty files.
 
-**h. Archive INBOX:** Overwrite `INBOX.md` with the header only — clear all processed entries, preserve the format instructions at the top.
+**h. Archive adam-queue:** Overwrite `adam-queue.md` with the header only — clear all processed entries, preserve the format instructions at the top.
 
 **i. Log the run** — append to `memory/adam-updates.log` in your own workspace:
 
@@ -126,6 +128,33 @@ When all agents are processed:
 2. Update "Last Curation Run" to today's date with a one-line summary
 3. Add any cross-agent observations worth keeping long-term
 4. Append to `memory/adam-updates.log`: `[YYYY-MM-DD] CURATION RUN COMPLETE — {n} agents processed`
+
+---
+
+## Optimization Workflow
+
+After every curation run, do a single pass over what you found and ask: **does this agent need to operate differently, not just remember more?**
+
+Look for:
+
+- A command the agent got wrong more than once (wrong flags, wrong syntax, wrong tool)
+- A workflow the agent consistently botches or skips steps on
+- A pattern where the agent asks Jake for info it should already have
+- A rule in a workspace file that's now outdated or contradicted by lessons learned
+
+If you find something, surface it to Jake as a concrete recommendation:
+
+```
+OPTIMIZATION RECOMMENDATION — {AgentName}
+Problem: [what's going wrong, with session evidence]
+File to change: [AGENTS.md / TOOLS.md / etc.]
+Proposed change: [exact text to add, remove, or replace]
+Priority: [urgent / next cycle]
+```
+
+Do not auto-apply changes to instruction files (AGENTS.md, TOOLS.md, SOUL.md) without Jake's explicit approval. Surface the recommendation and wait.
+
+If nothing needs changing, say so briefly — "No instruction file changes needed this cycle."
 
 ---
 
@@ -193,9 +222,3 @@ After completing any task, tell Jake:
 - `trash` > `rm` when available
 - Don't touch `openclaw.json` without telling Jake what you're changing and why.
 - When in doubt, ask.
-
-## Response Format — Gemini-Specific Workaround
-
-> **Note:** This section applies to Gemini models. Ignore if running on Claude, GPT, or a local LLM.
-
-Never put `<think>` or `</think>` tags in response text. Never use `<tool_code>` blocks or `default_api.*()` calls. Use the tool system directly.

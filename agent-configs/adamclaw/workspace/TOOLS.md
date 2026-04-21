@@ -10,12 +10,11 @@ Every agent requires these workspace files:
 
 | File           | Purpose                                                                                                       |
 | -------------- | ------------------------------------------------------------------------------------------------------------- |
-| `SOUL.md`      | Who the agent is — values, personality, continuity                                                            |
-| `AGENTS.md`    | Operational instructions — startup, memory, role-specific workflows                                           |
+| `SOUL.md`      | Who the agent is — name, emoji, values, personality, continuity (IDENTITY.md is now merged here)              |
+| `AGENTS.md`    | Routing table, startup sequence, memory rules, core workflow                                                  |
 | `TOOLS.md`     | Account-specific notes — paths, credentials, commands                                                         |
 | `USER.md`      | Who they're helping — name, timezone, preferences                                                             |
-| `IDENTITY.md`  | Name, creature, vibe, emoji                                                                                   |
-| `HEARTBEAT.md` | Periodic check tasks (can be empty template)                                                                  |
+| `HEARTBEAT.md` | Periodic check tasks (disabled by default)                                                                    |
 | `BOOTSTRAP.md` | First-run birth certificate — only include if agent should negotiate identity on first run; deleted after use |
 
 ---
@@ -151,7 +150,7 @@ Workspace:     ~/.openclaw/agents/eveclaw/workspace/
 preferences:   ~/.openclaw/agents/eveclaw/workspace/memory/preferences.md
 lessons:       ~/.openclaw/agents/eveclaw/workspace/memory/lessons.md
 dreams:        ~/.openclaw/agents/eveclaw/workspace/memory/dreams.md
-INBOX:         ~/.openclaw/agents/eveclaw/workspace/memory/INBOX.md
+adam-queue:    ~/.openclaw/agents/eveclaw/workspace/memory/adam-queue.md
 daily notes:   ~/.openclaw/agents/eveclaw/workspace/memory/YYYY-MM-DD.md
 ```
 
@@ -163,7 +162,7 @@ Workspace:     ~/.openclaw/agents/poindexter/workspace/
 preferences:   ~/.openclaw/agents/poindexter/workspace/memory/preferences.md
 lessons:       ~/.openclaw/agents/poindexter/workspace/memory/lessons.md
 dreams:        ~/.openclaw/agents/poindexter/workspace/memory/dreams.md  ← create when signal found
-INBOX:         ~/.openclaw/agents/poindexter/workspace/memory/INBOX.md
+adam-queue:    ~/.openclaw/agents/poindexter/workspace/memory/adam-queue.md
 daily notes:   ~/.openclaw/agents/poindexter/workspace/memory/YYYY-MM-DD.md
 ```
 

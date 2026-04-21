@@ -1,22 +1,31 @@
-# TOOLS.md - Local Notes
+# TOOLS.md — Command Reference
 
-<!-- TEMPLATE: Fill in account details, paths, and commands specific to this agent. -->
-<!-- Delete the examples section and replace with real content. -->
-
-Skills define _how_ tools work. This file is for _your_ specifics.
+<!-- Fill in account details, paths, and commands specific to this agent. -->
+<!-- Delete placeholder sections that don't apply. -->
 
 ---
 
-<!-- Example sections — replace with actual content for this agent:
+## {Skill/Tool Name}
 
-## Gmail / Calendar (if gog skill is enabled)
+<!-- Example for gog (Google Workspace): -->
+<!--
+Account: **{ACCOUNT}@gmail.com**
+Always pass `--account {ACCOUNT}@gmail.com`.
 
-Your Google account: **{ACCOUNT}@gmail.com**
+### Key commands
 
-Always pass `--account {ACCOUNT}@gmail.com` to gog commands.
+```bash
+# Search Gmail
+gog gmail search 'from:sender@example.com in:inbox' --account {ACCOUNT}@gmail.com
 
-## SSH / Other
-
-- host-alias → user@hostname
-
+# Create calendar event
+# SYNTAX: gog calendar create <calendarId> --summary "Title" --from <iso> --to <iso>
+gog calendar create {ACCOUNT}@gmail.com --summary "Event" --from 2026-04-09T12:00:00-04:00 --to 2026-04-09T13:00:00-04:00 --account {ACCOUNT}@gmail.com
+```
 -->
+
+---
+
+## {Other Tool / Skill}
+
+<!-- Add sections as needed for SSH hosts, TTS voices, device names, etc. -->

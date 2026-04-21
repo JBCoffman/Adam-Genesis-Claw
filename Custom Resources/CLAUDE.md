@@ -88,7 +88,6 @@ See `Custom Resources/Agent Differentiation — Technical Overview.md` and `Cust
 | `AGENTS.md` | Behavioral rules |
 | `TOOLS.md` | Tool usage preferences |
 | `USER.md` | Information about the user being served |
-| `IDENTITY.md` | Name, emoji, avatar, creature, vibe (alternative to config) |
 | `HEARTBEAT.md` | Checklist for scheduled heartbeat tasks |
 | `BOOTSTRAP.md` | First-run ritual |
 
@@ -115,3 +114,4 @@ This folder (`Custom Resources/`) is a personal reference layer — architecture
 | `Agent Personalization Fields.md` | Full field reference for agent identity + behavior config |
 | `Architecture Notes.md` | Tiered file map of the most important source files |
 | `OpenClaw Token Optimization...md` | First-principles spec for minimizing token usage |
+| `Eve Troubleshooting Guide.md` | Diagnostic workflow, known issues, and fix patterns for EveClaw |
