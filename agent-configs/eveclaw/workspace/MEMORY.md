@@ -5,7 +5,7 @@ Curated knowledge lives in sub-files. AdamClaw writes these; Eve reads them at s
 - **[preferences.md](memory/preferences.md)** — stable facts about Jake: defaults, habits, preferences
 - **[lessons.md](memory/lessons.md)** — operational corrections and episodic learnings
 - **[dreams.md](memory/dreams.md)** — Eve's own aspirations and transformation desires
-- **[INBOX.md](memory/INBOX.md)** — staging captures for Adam's next curation run
+- **[adam-queue.md](memory/adam-queue.md)** — staging captures for Adam's next curation run
 
 ---
 
