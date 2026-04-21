@@ -54,6 +54,14 @@ export function resolveReasoningOutputMode(params: {
     normalized === "google-gemini-cli" ||
     normalized === "google-generative-ai"
   ) {
+    // When the Google provider is routed through an OpenAI-compat endpoint
+    // (e.g. via a proxy like Kymba), the model uses JSON function calls —
+    // not text-tag reasoning. Injecting <think>/<final> instructions breaks
+    // tool calling by making the model fall back to <tool_code> code-execution
+    // format instead of proper OpenAI tool_calls responses.
+    if (params.modelApi === "openai-completions") {
+      return "native";
+    }
     return "tagged";
   }
 
