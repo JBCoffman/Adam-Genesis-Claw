@@ -100,12 +100,79 @@ Add to `agents.list[]`:
 | Gemini 2.5 Flash      | `google/gemini-2.5-flash`      | Mid-tier — faster thinking                 |
 | Gemini 2.5 Pro        | `google/gemini-2.5-pro`        | Full Pro — highest capability, higher cost |
 
+**Safe edit pattern — always use exec+python, never read/rewrite:**
+
+Do not read the full file, reconstruct the JSON in your thinking, and write it back. That produces a massive thinking block that causes a premature stop. Use `exec` to modify it surgically:
+
+```bash
+exec python3 -c "
+import json
+with open('/home/node/.openclaw/openclaw.json') as f: cfg = json.load(f)
+cfg['agents']['list'].append({
+  'id': 'agentname', 'name': 'agentname',
+  'workspace': '/home/node/.openclaw/agents/agentname/workspace',
+  'agentDir': '/home/node/.openclaw/agents/agentname/agent',
+  'model': 'google/gemini-2.5-flash-lite',
+  'thinkingDefault': 'low', 'skills': []
+})
+with open('/home/node/.openclaw/openclaw.json', 'w') as f: json.dump(cfg, f, indent=2)
+print('done')
+"
+```
+
+Always backup first: `exec cp /home/node/.openclaw/openclaw.json /home/node/.openclaw/openclaw.json.bak-$(date -u +%Y%m%dT%H%M%S)`
+
 **After editing openclaw.json:** restart the gateway for changes to take effect.
 
 ```bash
 # Restart via the OpenClaw Mac app, or:
 scripts/restart-mac.sh
 ```
+
+---
+
+## openclaw.json — Telegram Wiring
+
+A Telegram-facing agent needs two additional entries beyond `agents.list`:
+
+1. A bot token in `channels.telegram.accounts`
+2. A binding routing that account's messages to the agent
+
+**Add Telegram account (surgical python):**
+
+```bash
+exec python3 -c "
+import json
+with open('/home/node/.openclaw/openclaw.json') as f: cfg = json.load(f)
+cfg['channels']['telegram']['accounts']['agentname'] = {
+  'botToken': 'TOKEN_HERE',
+  'dmPolicy': 'pairing'
+}
+with open('/home/node/.openclaw/openclaw.json', 'w') as f: json.dump(cfg, f, indent=2)
+print('done')
+"
+```
+
+**Add binding (surgical python):**
+
+```bash
+exec python3 -c "
+import json
+with open('/home/node/.openclaw/openclaw.json') as f: cfg = json.load(f)
+cfg['bindings'].append({
+  'type': 'route',
+  'agentId': 'agentname',
+  'match': {'channel': 'telegram', 'accountId': 'agentname'}
+})
+with open('/home/node/.openclaw/openclaw.json', 'w') as f: json.dump(cfg, f, indent=2)
+print('done')
+"
+```
+
+`dmPolicy: "pairing"` is standard — the user must send `/start` to the bot in Telegram before
+it will respond. Always use `"pairing"` for new agents.
+
+After adding both, tell Jake to restart the gateway, then send `/start` to the bot in Telegram.
 
 ---
 
@@ -201,6 +268,7 @@ Current roster:
 
 - `agents/EVE.md` — EveClaw, Jake's primary daily assistant
 - `agents/POINDEXTER.md` — Poindexter, data correlation engine and decision support
+- `agents/BEANCOUNTER.md` — BeanCounter, financial controller and expense tracker
 
 ---
 

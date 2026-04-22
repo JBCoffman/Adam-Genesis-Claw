@@ -11,8 +11,29 @@ Before doing anything else:
 3. Read `TOOLS.md` — your operational reference (paths, schemas, commands)
 4. Read `MEMORY.md` — your long-term memory, always (includes last curation run date)
 5. Read `memory/YYYY-MM-DD.md` (today + yesterday) for recent session context
+6. Check for any in-progress creation tasks:
+   ```
+   exec ls memory/creation-*-in-progress.md 2>/dev/null
+   ```
+   If any exist, read the file and resume the creation workflow from the first unchecked step before doing anything else.
 
 Don't ask permission. Just do it.
+
+## Execution Rules (always active)
+
+These apply to every workflow — curation, creation, deletion, anything with multiple tool calls.
+
+**Rule 1 — Always emit text before every tool call.**
+Never issue a bare tool call with no preceding text. Even "Writing TOOLS.md..." is enough. A single status line keeps the thread alive and prevents silent stops mid-workflow. This is non-negotiable.
+
+**Rule 2 — Thinking is planning, not acting.**
+If you construct a file's content inside a thinking block, you have not written that file. The next turn must be a write tool call. Do not stop after thinking — execute.
+
+**Rule 3 — Never construct large JSON in thinking.**
+For JSON files (especially `openclaw.json`), do not read the file, rebuild the entire content in thinking, then write it. Use `exec` with python to make surgical modifications instead (see TOOLS.md for the pattern). This avoids bloated thinking blocks that exhaust the model and cause premature stops.
+
+**Rule 4 — State the next step after every tool result.**
+After each tool result, say what you just confirmed and what comes next. "✓ TOOLS.md written. Next: USER.md." This keeps the thread alive across turns.
 
 ## Memory
 
@@ -160,21 +181,112 @@ If nothing needs changing, say so briefly — "No instruction file changes neede
 
 ## Creation Workflow
 
+> **CRITICAL — single-turn rule:** The entire creation workflow — from the first `exec` through
+> the final report to Jake — MUST execute within a single continuous agentic turn. Do NOT emit
+> `<final>` until the last step. Text before each tool call is short inline status only
+> ("Writing AGENTS.md...") — it is not delivered to Jake and must not include `<final>`. If you
+> complete SOUL.md and feel the urge to send Jake a progress summary: suppress it and make the
+> next tool call immediately. `<final>` appears exactly once: in the completion report at Step 9.
+
 When Jake asks you to create a new agent:
 
 1. **Gather requirements** — name, purpose, skills needed, channel (Telegram/Discord/etc.), any personality notes
-2. **Create live workspace** — write all files directly to `/home/node/.openclaw/agents/{name}/workspace/` using the template at `agent-configs/_template/workspace/` as a starting point (read each template file, customize, write to the live path)
-3. **Write each file** tailored to the agent's purpose:
+
+2. **Write a checkpoint file as your very first tool call.** Before touching any workspace files,
+   write `memory/creation-{name}-in-progress.md` with the step plan:
+
+   ```
+   # creation-{name}-in-progress.md
+   Agent: {name}
+   Started: {ISO timestamp}
+
+   - [ ] exec — mkdir workspace/memory
+   - [ ] write — SOUL.md
+   - [ ] write — AGENTS.md
+   - [ ] write — TOOLS.md
+   - [ ] write — USER.md
+   - [ ] write — HEARTBEAT.md
+   - [ ] openclaw.json — register agent
+   - [ ] write — agents/{NAME}.md knowledge file
+   ```
+
+   Do not skip this. It is your safety net: if the session is interrupted, you can read this
+   file on the next startup and resume from the first unchecked step.
+
+3. **Before every tool call, emit a brief inline status line.** "Writing SOUL.md..." is enough.
+   Do NOT include `<final>` in these lines — inline text is not delivered to Jake. `<final>`
+   is reserved for the completion report in Step 9 only.
+
+4. **After each tool result, confirm it, update the checkpoint, and state what comes next.**
+   "✓ SOUL.md written. Updating checkpoint. Next: AGENTS.md."
+   Update the checkpoint by rewriting `memory/creation-{name}-in-progress.md` with that step
+   marked `[x]`. If a tool call fails, stop and report to Jake — do not proceed past a failure.
+
+5. **Write each file** tailored to the agent's purpose:
    - `SOUL.md` — who they are, what they do, their vibe
    - `AGENTS.md` — startup sequence, memory rules, any role-specific workflows
    - `TOOLS.md` — their account details, paths, commands (leave placeholders for what Jake needs to fill in)
    - `USER.md` — Jake's details (copy from template — timezone and prefs are already correct)
-   - `IDENTITY.md` — name, creature, vibe, emoji
    - `HEARTBEAT.md` — disabled-by-default template (use the template as-is unless role has obvious checks)
    - Do NOT create `BOOTSTRAP.md` unless Jake explicitly asks for it
-4. **Register in openclaw.json** — add entry to `agents.list[]` at `/home/node/.openclaw/openclaw.json` (see TOOLS.md for schema)
-5. **Create knowledge file** — `agents/{NAME}.md` in your own workspace documenting this agent
-6. **Report to Jake** — what was created, what works now, what Jake needs to do:
+
+6. **Register in openclaw.json** — three separate surgical python calls. Back up the file
+   first, then:
+
+   **6a. Add to `agents.list`:**
+
+   ```
+   exec python3 -c "
+   import json
+   with open('/home/node/.openclaw/openclaw.json') as f: cfg = json.load(f)
+   cfg['agents']['list'].append({
+     'id': 'NAME', 'name': 'NAME',
+     'workspace': '/home/node/.openclaw/agents/NAME/workspace',
+     'agentDir': '/home/node/.openclaw/agents/NAME/agent',
+     'model': 'google/gemini-2.5-flash-lite',
+     'thinkingDefault': 'low', 'skills': []
+   })
+   with open('/home/node/.openclaw/openclaw.json', 'w') as f: json.dump(cfg, f, indent=2)
+   print('done')
+   "
+   ```
+
+   **6b. Add Telegram account** (ask Jake for the bot token if you don't have it):
+
+   ```
+   exec python3 -c "
+   import json
+   with open('/home/node/.openclaw/openclaw.json') as f: cfg = json.load(f)
+   cfg['channels']['telegram']['accounts']['NAME'] = {'botToken': 'TOKEN', 'dmPolicy': 'pairing'}
+   with open('/home/node/.openclaw/openclaw.json', 'w') as f: json.dump(cfg, f, indent=2)
+   print('done')
+   "
+   ```
+
+   **6c. Add binding:**
+
+   ```
+   exec python3 -c "
+   import json
+   with open('/home/node/.openclaw/openclaw.json') as f: cfg = json.load(f)
+   cfg['bindings'].append({'type': 'route', 'agentId': 'NAME', 'match': {'channel': 'telegram', 'accountId': 'NAME'}})
+   with open('/home/node/.openclaw/openclaw.json', 'w') as f: json.dump(cfg, f, indent=2)
+   print('done')
+   "
+   ```
+
+   Verify by reading back all three sections after writing. See TOOLS.md for full schema details.
+
+7. **Create knowledge file** — `agents/{NAME}.md` in your own workspace documenting this agent
+
+8. **Delete the checkpoint file** — creation is complete:
+
+   ```
+   exec rm memory/creation-{name}-in-progress.md
+   ```
+
+9. **Report to Jake** — this is the only place `<final>` appears. State what was created, what
+   works now, and what Jake needs to do:
    - Sync live workspace to repo: `cp -r ~/.openclaw/agents/{name}/workspace/. agent-configs/{name}/workspace/`
    - Channel setup (Telegram bot token via BotFather, etc.)
    - Restart gateway to pick up openclaw.json changes
